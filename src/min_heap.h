@@ -18,13 +18,13 @@ typedef struct MinHeap {
 }MinHeap;
 
 ///tworzy nowy kopiec
-MinHeap* createMinHeap();
+MinHeap* minHeapCreate();
 
 ///przenosi ostatni element kopca do góry dopóki kopiec nie bêdzie znów posortowany
-void repairUpMinHeap(MinHeap *h);
+void minHeapRepairUp(MinHeap *h);
 
 ///dodaje element @p c do kopca
-bool addToMinHeap(MinHeap *t, City *c);
+bool minHeapAdd(MinHeap *t, City *c);
 
 ///zdejmuje pierwszy element z kopca
-City* peakFromMinHeap(MinHeap *t);
+City* minHeapPeak(MinHeap *t);

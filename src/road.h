@@ -1,2 +1,2 @@
-typedef struct RoadList RoadList;
+typedef struct RoadBST RoadBST;
 typedef struct Road Road;

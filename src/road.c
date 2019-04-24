@@ -2,11 +2,6 @@
 
 struct Road {
 	unsigned length;
-	int builtYear;
+	int modificationDate;
 	char *City1,*City2;
-};
-
-struct RoadList {
-	Road r;
-	RoadList *next;
 };

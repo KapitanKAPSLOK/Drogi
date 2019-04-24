@@ -1,6 +1,8 @@
 #include "map.h"
 #include "city.h"
+#include "route.h"
 
 struct Map {
-	//TODO:
+	//RouteBST *routes;
+	//CityBST *cities;
 };
