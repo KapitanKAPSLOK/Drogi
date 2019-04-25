@@ -4,5 +4,5 @@
 
 struct Route {
 	unsigned id;
-	RoadBST *r;
+	RoadList *r;
 };

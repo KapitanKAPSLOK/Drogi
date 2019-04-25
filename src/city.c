@@ -2,13 +2,18 @@
 #include "road.h"
 
 #include<string.h>
+#include <limits.h>
+#include <time.h>
 
-struct CityBST {
-	City *c;
-	CityBST *lChild,*rChild;
-};
+//////////////funkcje wewnêtrzne/////////////////
 
-unsigned cityHash(char *str) {
+//liczy hash dla podanego parametru x przy ustalonych parametrach a i b i zwraca wynik modulo size
+long tableHash(unsigned x, int a, int b, int size) {
+	//2147483629 jest to najwiêksza liczba pierwsza mniejsza od INT_MAX, pozwala wróciæ z wiêkszych liczb na zakres inta bez utraty liniowoœci
+	return ((a*x + b) % 2147483629 % size);
+}
+
+unsigned stringHash(char *str) {
 	int len = strlen(str);
 	unsigned hash = 1;
 	const unsigned prime = 97; //prime number approximately equal to possible characters used in [str]
@@ -17,50 +22,46 @@ unsigned cityHash(char *str) {
 		hash = pow * ((int)str[i]-31) + hash;
 		pow *= prime;
 	}
+	return hash;
 }
 
-typedef struct CityList {
-	City* c;
-	struct CityList *next;
-	struct CityList *prev;
-}CityList;
+/////////////////////////funkcje udostêpniane////////////////////
 
-typedef struct CityHashTable {
-	int a, b;
-	int size;
-	CityList **tab;
-}CityHashTable;
-
-
-long tableHash(unsigned x, int a, int b, int size) {
-	//2147483629 jest to najwiêksza liczba pierwsza mniejsza od INT_MAX, pozwala wróciæ z wiêkszych liczb na zakres inta bez utraty liniowoœci
-	return (a*x + b) % 2147483629 % size);
+unsigned cityHash(City *c) {
+	return stringHash(c->name);
 }
 
+
+//usuwa listê miast
 void cityListDelete(CityList *l) {
 	if (l == NULL)return;
 	CityList *p = l->next;
 	CityList *temp;
 	while (p != NULL) {
-		temp = p->nast;
+		temp = p->next;
 		free(p);
 		p = temp;
 	}
 	free(l);
 }
 
-void cityListAdd(CityList **l, City *c) {
+//dodaje element do listy miast
+bool cityListAdd(CityList **l, City *c) {
 	CityList *temp;
 	temp = malloc(sizeof(*temp));
-	if (*l != NULL) temp->nast = *l;
-	else temp->nast = NULL;
+	if (temp == NULL) return false;
+	if (*l != NULL) temp->next = *l;
+	else temp->next = NULL;
 	temp->c = c;
-
 	*l = temp;
+	return true;
 }
 
+//tworzy hash table z listy miast
 CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 	CityHashTable *table;
+	table = malloc(sizeof(*table));
+	if (table == NULL) return NULL; //brak pamiêci
 	CityList *list;
 	int *temp;
 	int size = numberOfCities;
@@ -87,13 +88,13 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 		a = rand() % 100 + 1;
 		b = rand() % 100 + 1;
 		while (list != NULL) {
-			++temp[tableHash(cityHash(list->c, a, b, size)];
+			++temp[tableHash(cityHash(list->c), a, b, size)];
 			list = list->next;
 		}
 		for (int i = 0; i < size; ++i) {
 			squares += temp[i] * temp[i];
 		}
-	} while (squares >= 4 * numberOfCities + 1);
+	} while (squares >= 6 * numberOfCities + 1); //w przypadku z³ego rozmieszczenia losujemy ponownie wspó³czynniki
 
 	free(temp);
 
@@ -105,7 +106,7 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 		table->tab[i] = NULL;
 	}
 	while (list != NULL) {
-		cityListAdd(&(table->tab[tableHash(CityHash(list->c), a, b, size)]),list->c);
+		cityListAdd(&(table->tab[tableHash(cityHash(list->c), a, b, size)]),list->c);
 		list = list->next;
 	}
 	if (table->size > 0) {
@@ -117,4 +118,3 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 
 	return table;
 }
-
