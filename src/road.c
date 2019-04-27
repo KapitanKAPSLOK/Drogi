@@ -15,13 +15,13 @@ void roadListDelete(RoadList *l) {
 }
 
 //dodaje element na pocz¹tek listy dróg
-bool RoadListAdd(RoadList **l, Road *c) {
+bool roadListAdd(RoadList **l, Road *r) {
 	RoadList *temp;
 	temp = malloc(sizeof(*temp));
 	if (temp == NULL) return false;
 	if (*l != NULL) temp->next = *l;
 	else temp->next = NULL;
-	temp->c = c;
+	temp->r = r;
 	*l = temp;
 	return true;
 }
@@ -29,14 +29,14 @@ bool RoadListAdd(RoadList **l, Road *c) {
 ///usuwa element r z listy dróg
 void roadListDeleteElement(RoadList **l, Road *r) {
 	if (l == NULL || r == NULL) return;
-	if (*l == r) { //element r znajduje siê na pocz¹tku
-		Road *temp = *l;
+	if ((*l)->r == r) { //element r znajduje siê na pocz¹tku
+		RoadList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
 	}
-	while (l->next != NULL) {
+	while ((*l)->next != NULL) {
 		if ((*l)->next->r == r) {
-			Road *temp = (*l)->next;
+			RoadList *temp = (*l)->next;
 			(*l)->next= (*l)->next->next;
 			free(temp);
 			return;

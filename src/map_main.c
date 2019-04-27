@@ -9,53 +9,8 @@
 
 #include <assert.h>
 
-//////testy//////////
-
-void showMinHeap(MinHeap *h) {
-	printf("%d %d\n ", h->size, h->maxSize);
-	for (int i = 0; i < h->size; ++i) {
-		printf("%d ", h->tab[i]->distance);
-	}
-}
-
 
 int main() {
-	City *c1 = malloc(sizeof(City));
-	City *c2 = malloc(sizeof(City));
-	City *c3 = malloc(sizeof(City));
-	City *c4 = malloc(sizeof(City));
-	City *c5 = malloc(sizeof(City));
-	City *c6 = malloc(sizeof(City));
-	c1->distance = 2;
-	c2->distance = 3;
-	c3->distance = 7;
-	c4->distance = 5;
-	c5->distance = 3;
-	c6->distance = 1;
-	MinHeap *h = minHeapCreate();
-	showMinHeap(h);
-	minHeapAdd(h, c1);
-	showMinHeap(h);
-	printf("\n");
-	minHeapAdd(h, c2);
-	showMinHeap(h);
-	printf("\n");
-	minHeapPeak(h);
-	minHeapAdd(h, c3);
-	showMinHeap(h);
-	printf("\n");
-	minHeapAdd(h, c4);
-	showMinHeap(h);
-	minHeapPeak(h);
-	printf("\n");
-	minHeapAdd(h, c5);
-	showMinHeap(h);
-	printf("\n");
-	minHeapAdd(h, c6);
-	showMinHeap(h);
-
-
-
   /*
   char const* str;
   

@@ -27,12 +27,35 @@ unsigned stringHash(char *str) {
 
 /////////////////////////funkcje udostêpniane////////////////////
 
+//³¹czy dwa miasta drog¹, zwraca true jeœli uda siê dodaæ drogê lub false jeœli nie
+bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear) {
+	
+	//tworzenie drogi
+	Road *r = malloc(sizeof(*r));
+	if (r == NULL) return false; //nie uda³o siê zaalokowaæ pamiêci
+	r->city1 = c1;
+	r->city2 = c2;
+	r->length = length;
+	r->modificationDate = builtYear;
+
+	//dodawanie drogi do miast
+	if (roadListAdd(&(c1->roads), r)) {
+		if (roadListAdd(&(c2->roads), r)) {
+			return true; //uda³o siê dodaæ drogê do obydwu miast
+		}
+		//uda³o siê dodaæ drogê do miasta c1, ale nie do miasta c2
+		roadListDeleteElement(&(c1->roads), r);
+	}
+	//nie uda³o siê dodaæ drogi do ¿adnego z miast
+	free(r);
+	return false;
+}
+
 unsigned cityHash(City *c) {
 	return stringHash(c->name);
 }
 
-
-//usuwa listê miast
+//usuwa listê miast, ale nie usuwa samych miast
 void cityListDelete(CityList *l) {
 	if (l == NULL)return;
 	CityList *p = l->next;
@@ -57,8 +80,27 @@ bool cityListAdd(CityList **l, City *c) {
 	return true;
 }
 
-//tworzy hash table z listy miast
+//dodaje na pocz¹tek listy l1 listê l2
+void cityListAddList(CityList **l1, CityList *l2) {
+	if (l2 == NULL) return; //nie ma nic do dodania
+	CityList *last = l2;
+	while (last->next != NULL) last = last->next;
+	last->next = (*l1);
+	(*l1) = l2;
+}
+
+//zwraca wskaŸnik do szukanego miasta c lub NULL jeœli miasta nie ma na liœcie
+City *cityListFind(CityList *l, City *c) {
+	while (l != NULL) {
+		if (!strcmp(l->c->name, c->name)) return l->c;
+		l = l->next;
+	}
+	return false;
+}
+
+//tworzy hash table z listy miast, numberOfCities to liczba miast na jak¹ ma zostaæ przygotowana tablica
 CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
+	if (numberOfCities == 0) return NULL;
 	CityHashTable *table;
 	table = malloc(sizeof(*table));
 	if (table == NULL) return NULL; //brak pamiêci
@@ -78,10 +120,11 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 	spowolnienie dostêpu do miast w strukturze*/
 	int a, b;
 	temp = malloc(size * sizeof(*temp));
+	if (temp == NULL) return NULL; //nie uda³o siê zaalokowaæ pamiêci
 	long squares;
 	do {
 		squares = 0;
-		list = cities->next;
+		list = cities;
 		for (int i = 0; i < size; ++i) {
 			temp[i] = 0;
 		}
@@ -101,6 +144,7 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 	//dodawanie komórek do planszy dla optymalnych wspó³czynników a i b
 	table->size = size;
 	table->tab = malloc(size * sizeof(*(table->tab)));
+	if (table->tab == NULL) return NULL; //nie uda³o siê zaalokowaæ pamiêci
 	list = cities;
 	for (int i = 0; i < size; ++i) {
 		table->tab[i] = NULL;
@@ -114,7 +158,68 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 		table->b = b;
 	}
 
-	cityListDelete(list);
+	table->numberOfElements = numberOfCities;
 
 	return table;
+}
+
+///usuwa strukturê
+void cityHashTableDelete(CityHashTable *t) {
+	if (t == NULL) return;
+	for (int i = 0; i < t->size; ++i) {
+		cityListDelete(t->tab[i]);
+	}
+	free(t->tab);
+	free(t);
+}
+
+//tworzy listê ze wszystkich miast przechowywanych w hash tabeli
+CityList *cityHashTableGetCityList(CityHashTable *t) {
+	CityList *l=NULL;
+	for (int i = 0; i < t->size; ++i) {
+		cityListAddList(&l, t->tab[i]);
+	}
+	return l;
+}
+
+City *cityMake(const char *str) {
+	City *c = malloc(sizeof(*c));
+	if (c == NULL) return NULL; //b³¹d alokacji pamiêci
+	c->roads = NULL;
+	c->name = malloc(strlen(str) * sizeof(*c->name));
+	if (c->name == NULL) return NULL; //b³¹d alokacji pamiêci
+	strcpy(c->name, str);
+	c->roads = NULL;
+	c->temporaryData = NULL;
+	return c;
+}
+
+//gdy liczby elementów hash tablicy jest wiêksza od po³owy jej rozmiaru tworzy now¹ wiêksz¹ tablicê
+void cityHashTableEnlarge(CityHashTable **t) {
+	if ((*t)->numberOfElements > (*t)->size / 2) {
+		//tworzenie nowej wiêkszej tablicy
+		CityList *l = cityHashTableGetCityList(*t);
+		CityHashTable *temp = cityHashTableMake(l, (*t)->numberOfElements + 1);
+		if (temp == NULL) return; //nie uda³o siê powiêkszyæ tablicy
+		//uda³o siê utworzyæ now¹ hash tabicê
+		cityHashTableDelete(*t);
+		(*t) = temp;
+		cityListDelete(l);
+	}
+}
+
+///zwraca wskaŸnik na miasto o nazwie str (dodaje je jeœli nie istnieje), w przypadku b³êdu zwraca NULL
+City *cityHashTableAdd(CityHashTable **t, const char *str) {
+	City *c = cityMake(str);
+	if (c == NULL) return NULL; //nie uda³o siê utworzyæ miasta
+	City *city = cityListFind((*t)->tab[tableHash(cityHash(c), (*t)->a, (*t)->b, (*t)->size)], c);
+	if (city == NULL) {
+		//miasto jeszcze nie istnieje i trzeba je dodaæ
+		if(!cityListAdd(&((*t)->tab[tableHash(cityHash(c), (*t)->a, (*t)->b, (*t)->size)]), c)) return NULL;
+		(*t)->numberOfElements++;
+		//przy wiêkszej iloœci elementów hashowanie mo¿e staæ siê nieoptymalne
+		cityHashTableEnlarge(t); //w razie potrzeby powiêksza tablicê na dane
+		return c;
+	}
+	return city;
 }
