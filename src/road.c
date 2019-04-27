@@ -1,5 +1,6 @@
 #include "road.h"
 
+#include<string.h>
 
 //usuwa listê dróg
 void roadListDelete(RoadList *l) {
@@ -43,4 +44,23 @@ void roadListDeleteElement(RoadList **l, Road *r) {
 		}
 	}
 	return;
+}
+
+//zwraca wskaŸnik do drogi zawieraj¹cej z miasta o nazwie str lub NULL jeœli nie ma takiej drogi nie ma na liœcie
+Road *roadListFindStr(RoadList *l, const char *str) {
+	while (l != NULL) {
+		if (!strcmp(l->r->city1->name, str) || !strcmp(l->r->city2->name, str)) return l->r;
+		l = l->next;
+	}
+	return NULL;
+}
+
+///////////////////
+
+//zmienia rok ostatniej modyfikacji drogi
+bool roadRepair(Road *r, int year) {
+	if (year < r->modificationDate) return false;
+	if (year == 0) return false; //nie by³o roku 0
+	r->modificationDate = year;
+	return true;
 }

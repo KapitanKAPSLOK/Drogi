@@ -50,11 +50,16 @@ bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, in
 	return true;
 }
 
-////Modyfikuje rok ostatniego remontu odcinka drogi.
-//bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) {
-//	//TODO:
-//}
-//
+//Modyfikuje rok ostatniego remontu odcinka drogi.
+bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) {
+	if (!strcmp(city1, city2)) return false; //miasta s¹ identyczne, nie mo¿e byæ miêdzy nimi drogi
+	City *c = cityHashTableFind(map->cities, city1);
+	if (c == NULL) return false; //nie ma takiego miasta
+	Road *r=roadListFindStr(c->roads, city2);
+	if (r == NULL) return false; //nie ma takiej drogi
+	return roadRepair(r, repairYear);
+}
+
 ////£¹czy dwa ró¿ne miasta drog¹ krajow¹.
 //bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
 //	//TODO

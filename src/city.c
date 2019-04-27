@@ -13,7 +13,7 @@ long tableHash(unsigned x, int a, int b, int size) {
 	return ((a*x + b) % 2147483629 % size);
 }
 
-unsigned stringHash(char *str) {
+unsigned stringHash(const char *str) {
 	int len = strlen(str);
 	unsigned hash = 1;
 	const unsigned prime = 97; //prime number approximately equal to possible characters used in [str]
@@ -23,6 +23,29 @@ unsigned stringHash(char *str) {
 		pow *= prime;
 	}
 	return hash;
+}
+
+//tworzy listê ze wszystkich miast przechowywanych w hash tabeli
+CityList *cityHashTableGetCityList(CityHashTable *t) {
+	CityList *l = NULL;
+	for (int i = 0; i < t->size; ++i) {
+		cityListAddList(&l, t->tab[i]);
+	}
+	return l;
+}
+
+//gdy liczby elementów hash tablicy jest wiêksza od po³owy jej rozmiaru tworzy now¹ wiêksz¹ tablicê
+void cityHashTableEnlarge(CityHashTable **t) {
+	if ((*t)->numberOfElements > (*t)->size / 2) {
+		//tworzenie nowej wiêkszej tablicy
+		CityList *l = cityHashTableGetCityList(*t);
+		CityHashTable *temp = cityHashTableMake(l, (*t)->numberOfElements + 1);
+		if (temp == NULL) return; //nie uda³o siê powiêkszyæ tablicy
+		//uda³o siê utworzyæ now¹ hash tabicê
+		cityHashTableDelete(*t);
+		(*t) = temp;
+		cityListDelete(l);
+	}
 }
 
 /////////////////////////funkcje udostêpniane////////////////////
@@ -95,7 +118,16 @@ City *cityListFind(CityList *l, City *c) {
 		if (!strcmp(l->c->name, c->name)) return l->c;
 		l = l->next;
 	}
-	return false;
+	return NULL;
+}
+
+//zwraca wskaŸnik do szukanego miasta c lub NULL jeœli miasta nie ma na liœcie
+City *cityListFindStr(CityList *l, const char *str) {
+	while (l != NULL) {
+		if (!strcmp(l->c->name, str)) return l->c;
+		l = l->next;
+	}
+	return NULL;
 }
 
 //tworzy hash table z listy miast, numberOfCities to liczba miast na jak¹ ma zostaæ przygotowana tablica
@@ -173,14 +205,6 @@ void cityHashTableDelete(CityHashTable *t) {
 	free(t);
 }
 
-//tworzy listê ze wszystkich miast przechowywanych w hash tabeli
-CityList *cityHashTableGetCityList(CityHashTable *t) {
-	CityList *l=NULL;
-	for (int i = 0; i < t->size; ++i) {
-		cityListAddList(&l, t->tab[i]);
-	}
-	return l;
-}
 
 City *cityMake(const char *str) {
 	City *c = malloc(sizeof(*c));
@@ -192,20 +216,6 @@ City *cityMake(const char *str) {
 	c->roads = NULL;
 	c->temporaryData = NULL;
 	return c;
-}
-
-//gdy liczby elementów hash tablicy jest wiêksza od po³owy jej rozmiaru tworzy now¹ wiêksz¹ tablicê
-void cityHashTableEnlarge(CityHashTable **t) {
-	if ((*t)->numberOfElements > (*t)->size / 2) {
-		//tworzenie nowej wiêkszej tablicy
-		CityList *l = cityHashTableGetCityList(*t);
-		CityHashTable *temp = cityHashTableMake(l, (*t)->numberOfElements + 1);
-		if (temp == NULL) return; //nie uda³o siê powiêkszyæ tablicy
-		//uda³o siê utworzyæ now¹ hash tabicê
-		cityHashTableDelete(*t);
-		(*t) = temp;
-		cityListDelete(l);
-	}
 }
 
 ///zwraca wskaŸnik na miasto o nazwie str (dodaje je jeœli nie istnieje), w przypadku b³êdu zwraca NULL
@@ -222,4 +232,11 @@ City *cityHashTableAdd(CityHashTable **t, const char *str) {
 		return c;
 	}
 	return city;
+}
+
+//zwraca wskaŸnij do szukanego miasta lub NULL, gdy takie miasto nie istnieje
+City *cityHashTableFind(CityHashTable *t, const char *str) {
+	if (t == NULL) return NULL;
+	if (str == NULL) return NULL;
+	return cityListFindStr(t->tab[tableHash(stringHash(str), t->a, t->b, t->size)], str);
 }
