@@ -74,6 +74,24 @@ bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear) {
 	return false;
 }
 
+//usuwa miasto oraz prowadz¹ce do niego drogi
+void cityDelete(City *c){
+	free(c->name);
+	free(c->temporaryData);
+	RoadList *l = c->roads;
+	//usuwanie dróg z list dróg w miastach do których prowadz¹ drogi z miasta c
+	while (l != NULL) {
+		City *temp= roadGetCity(l->r, c);
+		roadListDeleteElement(temp->roads, l->r);
+	}
+	//usuwanie samych dróg
+	roadListDeleteElements(c->roads);
+	//usuwanie struktury listy pozosta³ej po drogach
+	roadListDelete(c->roads);
+
+	free(c);
+}
+
 unsigned cityHash(City *c) {
 	return stringHash(c->name);
 }
@@ -89,6 +107,14 @@ void cityListDelete(CityList *l) {
 		p = temp;
 	}
 	free(l);
+}
+
+//zwalnia pamiêæ po elementach przechowywanych w liœcie
+void cityListDeleteElements(CityList *l) {
+	while (l != NULL) {
+		cityDelete(l->c);
+		l = l->next;
+	}
 }
 
 //dodaje element do listy miast
@@ -199,6 +225,7 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 void cityHashTableDelete(CityHashTable *t) {
 	if (t == NULL) return;
 	for (int i = 0; i < t->size; ++i) {
+		cityListDeleteElements(t->tab[i]);
 		cityListDelete(t->tab[i]);
 	}
 	free(t->tab);

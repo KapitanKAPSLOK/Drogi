@@ -10,7 +10,6 @@ typedef struct RoadList RoadList;
 ///struktura przechowuj¹ca informacje o miastach
 typedef struct City {
 	char* name;
-	//unsigned distance;
 	unsigned *temporaryData;
 	RoadList *roads;
 }City;
@@ -33,6 +32,9 @@ typedef struct CityHashTable {
 
 ///usuwa listê
 void cityListDelete(CityList *l);
+
+//zwalnia pamiêæ po elementach przechowywanych w liœcie
+void cityListDeleteElements(CityList *l);
 
 ///dodaje element do listy
 bool cityListAdd(CityList **l, City *c);
@@ -67,3 +69,6 @@ unsigned cityHash(City *c);
 
 //³¹czy dwa miasta drog¹, zwraca true jeœli uda siê dodaæ drogê lub false jeœli nie
 bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear);
+
+///usuwa miasto oraz prowadz¹ce do niego drogi
+void cityDelete(City *c);

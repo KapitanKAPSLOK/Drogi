@@ -46,6 +46,14 @@ void roadListDeleteElement(RoadList **l, Road *r) {
 	return;
 }
 
+//zwalnia pamiêæ po elementach przechowywanych w liœcie
+void roadListDeleteElements(RoadList *r) {
+	while (r != NULL) {
+		free(r->c);
+		r = r->next;
+	}
+}
+
 //zwraca wskaŸnik do drogi zawieraj¹cej z miasta o nazwie str lub NULL jeœli nie ma takiej drogi nie ma na liœcie
 Road *roadListFindStr(RoadList *l, const char *str) {
 	while (l != NULL) {
@@ -63,4 +71,10 @@ bool roadRepair(Road *r, int year) {
 	if (year == 0) return false; //nie by³o roku 0
 	r->modificationDate = year;
 	return true;
+}
+
+//zwraca jedno z miast, które ³¹czy droga, ale ró¿ne od miasta c
+City *roadGetCity(Road *r, City *c) {
+	if (r->city1 != c) return r->city1;
+	return r->city2;
 }

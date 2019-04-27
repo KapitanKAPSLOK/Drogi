@@ -60,11 +60,11 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
 	return roadRepair(r, repairYear);
 }
 
-////£¹czy dwa ró¿ne miasta drog¹ krajow¹.
-//bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
-//	//TODO
-//}
-//
+//£¹czy dwa ró¿ne miasta drog¹ krajow¹.
+bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
+	//TODO
+}
+
 ////Wyd³u¿a drogê krajow¹ do podanego miasta.
 //bool extendRoute(Map *map, unsigned routeId, const char *city) {
 //	//TODO
