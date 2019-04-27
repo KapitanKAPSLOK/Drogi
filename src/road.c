@@ -47,10 +47,10 @@ void roadListDeleteElement(RoadList **l, Road *r) {
 }
 
 //zwalnia pamiêæ po elementach przechowywanych w liœcie
-void roadListDeleteElements(RoadList *r) {
-	while (r != NULL) {
-		free(r->c);
-		r = r->next;
+void roadListDeleteElements(RoadList *l) {
+	while (l != NULL) {
+		free(l->r);
+		l = l->next;
 	}
 }
 
@@ -78,3 +78,4 @@ City *roadGetCity(Road *r, City *c) {
 	if (r->city1 != c) return r->city1;
 	return r->city2;
 }
+

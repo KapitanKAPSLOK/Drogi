@@ -10,7 +10,7 @@ typedef struct RoadList RoadList;
 ///struktura przechowuj¹ca informacje o miastach
 typedef struct City {
 	char* name;
-	unsigned *temporaryData;
+	int *temporaryData;
 	RoadList *roads;
 }City;
 
@@ -72,3 +72,6 @@ bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear);
 
 ///usuwa miasto oraz prowadz¹ce do niego drogi
 void cityDelete(City *c);
+
+//usuwa zmienne tymczasowe z miasta i wszystkich miast do których mo¿na z niego dojœæ drogami
+void cityDeleteTemporaryData(City *c);

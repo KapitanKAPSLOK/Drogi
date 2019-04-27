@@ -62,7 +62,16 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
 
 //£¹czy dwa ró¿ne miasta drog¹ krajow¹.
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
-	//TODO
+	if (map == NULL) return false;
+	if (!strcmp(city1, city2)) return false; //nazwy miast s¹ takie same
+	if (routeId < 1 || routeId>999) return false; //niepoprawny identyfikator drogi krajowej
+	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze ju¿ istnieje
+	RoadList *r = connectCities(map->cities, city1, city2);
+	if (r == NULL) return false; //nie uda³o siê wyznaczyæ jednoznacznie najkrótszej drogi miêdzy miastami
+	Route *route = routeMake(routeId, r);
+	if (route == NULL) return false; //nie uda³o siê utworzyæ drogi krajowej
+	if(routeListAdd(&(map->routes), route)) return true;
+	return false;
 }
 
 ////Wyd³u¿a drogê krajow¹ do podanego miasta.

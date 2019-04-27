@@ -4,13 +4,15 @@
 //zamienia dwa indeksy o podanych indeksach
 void minHeapSwap(MinHeap *h, int index1, int index2) {
 	City *temp = h->tab[index1];
+	h->tab[index1]->temporaryData[1] = index2;
+	h->tab[index2]->temporaryData[1] = index1;
 	h->tab[index1] = h->tab[index2];
 	h->tab[index2] = temp;
 }
 
-//przenosi ostatni element kopca do góry dopóki kopiec nie bêdzie znów posortowany
-void minHeapRepairUp(MinHeap *h) {
-	int i = h->size;
+//przenosi element o numerze index do góry kopca dopóki kopiec nie bêdzie znów posortowany
+void minHeapRepairUp(MinHeap *h,int index) {
+	int i = index;
 	while (i != 1 && h->tab[i-1]->temporaryData[0] < h->tab[i / 2 - 1]->temporaryData[0]) {
 		minHeapSwap(h, i-1, i / 2-1);
 		i /= 2;
@@ -77,8 +79,9 @@ bool minHeapAdd(MinHeap *h, City *c) {
 		}
 	}
 	if (h->tab == NULL) return false; //nie uda³o siê zaalokowaæ pamiêci
+	c->temporaryData[1] = h->size; //miasto pamiêta swój indeks w tablicy
 	h->tab[h->size++] = c;
-	minHeapRepairUp(h);
+	minHeapRepairUp(h,h->size);
 	return true;
 }
 

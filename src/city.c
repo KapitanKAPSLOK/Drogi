@@ -74,6 +74,19 @@ bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear) {
 	return false;
 }
 
+//tworzy nowe miasto o nazwie str
+City *cityMake(const char *str) {
+	City *c = malloc(sizeof(*c));
+	if (c == NULL) return NULL; //b≥πd alokacji pamiÍci
+	c->roads = NULL;
+	c->name = malloc(strlen(str) * sizeof(*c->name));
+	if (c->name == NULL) return NULL; //b≥πd alokacji pamiÍci
+	strcpy(c->name, str);
+	c->roads = NULL;
+	c->temporaryData = NULL;
+	return c;
+}
+
 //usuwa miasto oraz prowadzπce do niego drogi
 void cityDelete(City *c){
 	free(c->name);
@@ -82,7 +95,7 @@ void cityDelete(City *c){
 	//usuwanie drÛg z list drÛg w miastach do ktÛrych prowadzπ drogi z miasta c
 	while (l != NULL) {
 		City *temp= roadGetCity(l->r, c);
-		roadListDeleteElement(temp->roads, l->r);
+		roadListDeleteElement(&(temp->roads), l->r);
 	}
 	//usuwanie samych drÛg
 	roadListDeleteElements(c->roads);
@@ -90,6 +103,17 @@ void cityDelete(City *c){
 	roadListDelete(c->roads);
 
 	free(c);
+}
+
+//usuwa zmienne tymczasowe z miasta i wszystkich miast do ktÛrych moøna z niego dojúÊ drogami
+void cityDeleteTemporaryData(City *c) {
+	if (c->temporaryData == NULL) return;
+	free(c->temporaryData);
+	RoadList *l = c->roads;
+	while (l != NULL) {
+		cityDeleteTemporaryData(l->r->city1);
+		cityDeleteTemporaryData(l->r->city2);
+	}
 }
 
 unsigned cityHash(City *c) {
@@ -230,19 +254,6 @@ void cityHashTableDelete(CityHashTable *t) {
 	}
 	free(t->tab);
 	free(t);
-}
-
-
-City *cityMake(const char *str) {
-	City *c = malloc(sizeof(*c));
-	if (c == NULL) return NULL; //b≥πd alokacji pamiÍci
-	c->roads = NULL;
-	c->name = malloc(strlen(str) * sizeof(*c->name));
-	if (c->name == NULL) return NULL; //b≥πd alokacji pamiÍci
-	strcpy(c->name, str);
-	c->roads = NULL;
-	c->temporaryData = NULL;
-	return c;
 }
 
 ///zwraca wskaünik na miasto o nazwie str (dodaje je jeúli nie istnieje), w przypadku b≥Ídu zwraca NULL
