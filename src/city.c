@@ -146,8 +146,7 @@ bool cityListAdd(CityList **l, City *c) {
 	CityList *temp;
 	temp = malloc(sizeof(*temp));
 	if (temp == NULL) return false;
-	if (*l != NULL) temp->next = *l;
-	else temp->next = NULL;
+	temp->next = *l;
 	temp->c = c;
 	*l = temp;
 	return true;

@@ -19,20 +19,29 @@ typedef struct RoadList {
 	struct RoadList *next;
 }RoadList;
 
-//dodaje element na pocz¹tek listy dróg
+///dodaje element na pocz¹tek listy dróg
 bool roadListAdd(RoadList **l, Road *r);
 
-//usuwa listê dróg
+///dodaje na pocz¹tek listy l1 listê l2
+void roadListAddList(RoadList **l1, RoadList *l2);
+
+///usuwa listê dróg
 void roadListDelete(RoadList *l);
 
 ///usuwa element r z listy dróg
 void roadListDeleteElement(RoadList **l, Road *r);
 
-//zwalnia pamiêæ po elementach przechowywanych w liœcie
+///zwalnia pamiêæ po elementach przechowywanych w liœcie
 void roadListDeleteElements(RoadList *r);
 
 ///zwraca wskaŸnik do drogi zawieraj¹cej z miasta o nazwie str lub NULL jeœli nie ma takiej drogi nie ma na liœcie
 Road *roadListFindStr(RoadList *l, const char *str);
+
+///odwraca listê
+RoadList *roadListReverse(RoadList *l);
+
+///zwraca true jeœli któraœ z dróg w liœcie l dochodzi do miasta c
+bool roadListContain(RoadList *l, City *c);
 
 
 ///zmienia rok ostatniej modyfikacji drogi

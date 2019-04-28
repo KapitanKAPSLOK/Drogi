@@ -27,6 +27,15 @@ bool roadListAdd(RoadList **l, Road *r) {
 	return true;
 }
 
+//dodaje na pocz¹tek listy l1 listê l2
+void roadListAddList(RoadList **l1, RoadList *l2) {
+	if (l2 == NULL) return; //nie ma nic do dodania
+	RoadList *last = l2;
+	while (last->next != NULL) last = last->next;
+	last->next = (*l1);
+	(*l1) = l2;
+}
+
 ///usuwa element r z listy dróg
 void roadListDeleteElement(RoadList **l, Road *r) {
 	if (l == NULL || r == NULL) return;
@@ -63,6 +72,27 @@ Road *roadListFindStr(RoadList *l, const char *str) {
 	return NULL;
 }
 
+//odwraca listê
+RoadList *roadListReverse(RoadList *l) {
+	if (l == NULL) return NULL;
+	RoadList *prev = NULL;
+	while (l != NULL) {
+		RoadList *temp = l->next;
+		l->next = prev;
+		prev = l;
+		l = temp;
+	}
+	return prev;
+}
+
+//zwraca true jeœli któraœ z dróg w liœcie l dochodzi do miasta c
+bool roadListContain(RoadList *l, City *c) {
+	while (l != NULL) {
+		if (!strcmp(l->r->city1->name, c->name) || !strcmp(l->r->city2->name, c->name)) return true;
+		l = l->next;
+	}
+	return false;
+}
 ///////////////////
 
 //zmienia rok ostatniej modyfikacji drogi

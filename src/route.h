@@ -4,6 +4,7 @@
 
 ///struktura przechowuj¹ca informacjê o drogach krajowych
 typedef struct Route {
+	City *start,*end;
 	unsigned id;
 	RoadList *roads;
 }Route;
@@ -16,7 +17,7 @@ typedef struct RouteList {
 
 
 ///tworzy now¹ drogê krajow¹, jeœli nie uda siê jej utworzyæ zwraca NULL
-Route *routeMake(unsigned nr, RoadList *roads);
+Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end);
 
 
 ///dodaje element na pocz¹tek listy dróg krajowych
@@ -28,8 +29,17 @@ void routeListDelete(RouteList *l);
 ///usuwa element r z listy dróg krajowych
 void routeListDeleteElement(RouteList **l, Route *r);
 
+///zwraca drogê krajow¹ o podanym numerze lub NULL jeœli nie istnieje
+Route *routeListFind(RouteList *l, unsigned nr);
+
 ///zwraca drogê krajow¹ o podanym numerze lub NULL jeœli nie ma takiej na liœcie
 Route *routeListFind(RouteList *l, unsigned nr);
 
+///tworzy listê z miast przez które przechodzi droga krajowa
+CityList *routeMakeCityList(Route *r);
+
 ///zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
 RoadList *connectCities(CityHashTable *t, const char *c1, const char *c2);
+
+///zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
+RoadList *connectCitiesExtend(CityHashTable *t, const char *c1, const char *c2, CityList *cities);
