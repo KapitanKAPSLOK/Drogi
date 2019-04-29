@@ -6,10 +6,11 @@
 
 #include <string.h>
 
-struct Map {
+///Struktura przechowuj¹ca mapê dróg krajowych.
+typedef struct Map {
 	RouteList *routes;
 	CityHashTable *cities;
-};
+}Map;
 
 //Tworzy now¹ strukturê.
 Map* newMap(void) {
@@ -114,7 +115,6 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 
 	return true;
 }
-
 
 //Udostêpnia informacje o drodze krajowej.
 char const* getRouteDescription(Map *map, unsigned routeId) {

@@ -1,3 +1,9 @@
+/** @file
+ * Interfejs klasy przechowuj¹cej funkcje dzia³aj¹ce na napisach
+ *
+ * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
+ * @date 29.04.2019
+ */
 #pragma once
 
 ///dodaje napis addition na koniec napisu str

@@ -1,3 +1,9 @@
+/** @file
+ * Interfejs klasy miast
+ *
+ * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
+ * @date 29.04.2019
+ */
 #pragma once
 
 #include "road.h"
@@ -14,13 +20,13 @@ typedef struct City {
 	RoadList *roads;
 }City;
 
-//struktura przechowuj¹ca listê miast
+///struktura przechowuj¹ca listê miast
 typedef struct CityList {
 	City* c;
 	struct CityList *next;
 }CityList;
 
-///struktura hash table dla miast
+///struktura hash tablicy dla miast
 typedef struct CityHashTable {
 	int a, b;
 	int size;
@@ -28,7 +34,7 @@ typedef struct CityHashTable {
 	CityList **tab;
 }CityHashTable;
 
-////////////////lista/////////////
+//////////////////cityList/////////////////
 
 ///usuwa listê
 void cityListDelete(CityList *l);
@@ -51,7 +57,7 @@ City *cityListFind(CityList *l, City *c);
 ///zwraca wskaŸnik do szukanego miasta c lub NULL jeœli miasta nie ma na liœcie
 City *cityListFindStr(CityList *l, const char *str);
 
-/////////////hash table/////////////////////
+////////////////////cityHashTable/////////////////////////
 
 //tworzy hash table z listy miast, zwraca NULL gdy nie uda siê utworzyæ struktury
 CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities);
@@ -65,7 +71,7 @@ City *cityHashTableAdd(CityHashTable **t, const char *str);
 //zwraca wskaŸnij do szukanego miasta lub NULL, gdy takie miasto nie istnieje
 City *cityHashTableFind(CityHashTable *t, const char *str);
 
-////////////////////inne//////////////////////
+///////////////////////inne///////////////////////////
 
 ///zwraca hash podanego miasta
 unsigned cityHash(City *c);

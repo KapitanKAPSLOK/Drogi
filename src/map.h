@@ -11,10 +11,10 @@
 
 #include <stdbool.h>
 
-/**
- * Struktura przechowująca mapę dróg krajowych.
- */
+
+///Struktura przechowująca mapę dróg krajowych.
 typedef struct Map Map;
+
 
 /** @brief Tworzy nową strukturę.
  * Tworzy nową, pustą strukturę niezawierającą żadnych miast, odcinków dróg ani

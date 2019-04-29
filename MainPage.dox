@@ -7,8 +7,17 @@ Uwaga: aktualna treść zadania znajduje się w [Moodle'u](https://moodle.mimuw.
 
 ### Opis programu
 
-Tegoroczne duże zadanie polega na zaimplementowaniu operacji na mapach drogowych.
 
-TODO
+Program implementuje obsługę mapy dróg krajowych. W programie przyjęto następujące definicje.
+
+Mapa dróg jest zbiorem miast (ang. city) połączonych odcinkami dróg (ang. road).
+
+Miasto reprezentowane jest przez jego nazwę, która jest niepustym napisem w stylu C niezawierającym kodów od 0 do 31 ani średnika i zakończonym zerem.
+
+Każdy odcinek drogi łączy dwa różne miasta. Między parą miast może być co najwyżej jeden odcinek drogi. Odcinek drogi ma dwa atrybuty: długość, która jest dodatnią liczbą całkowitą i rok, który jest rokiem budowy lub rokiem ostatniego remontu i jest liczbą całkowitą. Wartości dodatnie reprezentują lata n.e., a wartości ujemne to lata p.n.e. Uwaga: nie było roku 0.
+
+Droga jest to ciąg odcinków drogowych łączących dwa różne miasta, bez przerw, samoprzecięć i pętli.
+
+Droga krajowa (ang. route) jest to droga. Jeden odcinek drogi może należeć do wielu dróg krajowych. Droga krajowa identyfikowana jest przez jej numer, który jest liczbą całkowitą z przedziału od 1 do 999. Długość drogi krajowej to suma długości jej odcinków.
 
 */

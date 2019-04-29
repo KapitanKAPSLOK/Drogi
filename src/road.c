@@ -3,6 +3,9 @@
 
 #include<string.h>
 
+
+///////////////////////roadList/////////////////////////////
+
 //usuwa listê dróg
 void roadListDelete(RoadList *l) {
 	if (l == NULL)return;
@@ -94,7 +97,9 @@ Road *roadListContain(RoadList *l, City *c) {
 	}
 	return NULL;
 }
-///////////////////
+
+
+///////////////////////////////road//////////////////////////////
 
 //zmienia rok ostatniej modyfikacji drogi
 bool roadRepair(Road *r, int year) {
@@ -118,14 +123,13 @@ bool roadConnectCity(Road *r, City *c) {
 
 //zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
 char *roadGetDescription(Road *r, City *c) {
-	City *temp=roadGetCity(r, c);
 	char *str = ";";
 	//jeœli przy do³¹czaniu napisów zostanie zwrócony NULL znaczy, ¿e zabrak³o pamiêci, wtedy zwracany jest NULL
 	if (!(str = myStringAppendInt(str, r->length))) return NULL;
-	if (!(str = myStringAppendInt(str, ";"))) return NULL;
+	if (!(str = myStringAppendString(str, ";"))) return NULL;
 	if (!(str = myStringAppendInt(str, r->modificationDate))) return NULL;
-	if (!(str = myStringAppendInt(str, ";"))) return NULL;
-	if (!(str = myStringAppendInt(str, roadGetCity(r,c)))) return NULL;
+	if (!(str = myStringAppendString(str, ";"))) return NULL;
+	if (!(str = myStringAppendString(str, roadGetCity(r,c)->name))) return NULL;
 	return str;
 }
 

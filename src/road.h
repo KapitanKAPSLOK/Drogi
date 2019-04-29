@@ -1,3 +1,9 @@
+/** @file
+ * Interfejs klasy odcinków dróg
+ *
+ * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
+ * @date 29.04.2019
+ */
 #pragma once
 
 #include "city.h"

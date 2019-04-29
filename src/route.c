@@ -10,38 +10,8 @@ int min(int a, int b) {
 	return (a < b) ? a : b;
 }
 
-//tworzy now¹ drogê krajow¹, jeœli nie uda siê jej utworzyæ zwraca NULL
-Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end) {
-	Route *r = malloc(sizeof(*r));
-	if (r == NULL) return NULL;
-	r->id = nr;
-	r->roads = roads;
-	r->start = start;
-	r->end = end;
-	return r;
-}
 
-//tworzy listê z miast przez które przechodzi droga krajowa
-CityList *routeMakeCityList(Route *r) {
-	CityList *l;
-	if (!cityListAdd(&l, r->end)) {
-		//nie uda³o siê dodaæ elementu do listy
-		cityListDelete(l);
-		return NULL;
-	}
-	RoadList *road = r->roads;
-	City *c = r->end;
-	while (road != NULL) {
-		if (!cityListAdd(&l, roadGetCity(road->r,c))) {
-			//nie uda³o siê dodaæ elementu do listy
-			cityListDelete(l);
-			return NULL;
-		}
-		c = roadGetCity(road->r, c);
-		road = road->next;
-	}
-	return l;
-}
+//////////////////////routeList/////////////////////////
 
 //usuwa listê dróg krajowych
 void routeListDelete(RouteList *l) {
@@ -93,6 +63,42 @@ Route *routeListFind(RouteList *l, unsigned nr) {
 		if (l->r->id == nr) return l->r;
 	}
 	return NULL;
+}
+
+
+/////////////////////////inne//////////////////////////////
+
+//tworzy now¹ drogê krajow¹, jeœli nie uda siê jej utworzyæ zwraca NULL
+Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end) {
+	Route *r = malloc(sizeof(*r));
+	if (r == NULL) return NULL;
+	r->id = nr;
+	r->roads = roads;
+	r->start = start;
+	r->end = end;
+	return r;
+}
+
+//tworzy listê z miast przez które przechodzi droga krajowa
+CityList *routeMakeCityList(Route *r) {
+	CityList *l;
+	if (!cityListAdd(&l, r->end)) {
+		//nie uda³o siê dodaæ elementu do listy
+		cityListDelete(l);
+		return NULL;
+	}
+	RoadList *road = r->roads;
+	City *c = r->end;
+	while (road != NULL) {
+		if (!cityListAdd(&l, roadGetCity(road->r, c))) {
+			//nie uda³o siê dodaæ elementu do listy
+			cityListDelete(l);
+			return NULL;
+		}
+		c = roadGetCity(road->r, c);
+		road = road->next;
+	}
+	return l;
 }
 
 //dodaje do drogi krajowej najkrótsz¹ œcie¿kê ³¹cz¹c¹ c1 i c2, ale nie bezpoœrednio
