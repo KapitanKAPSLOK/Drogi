@@ -38,7 +38,7 @@ void deleteMap(Map *map) {
 //Dodaje do mapy odcinek drogi miêdzy dwoma ró¿nymi miastami.
 bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, int builtYear) {
 	if (city1 == NULL || city2 == NULL) return false; //niepoprawna nazwa miasta
-	if(strcmp(city1, city2)) return false; //nazwy s¹ identyczne
+	if(!strcmp(city1, city2)) return false; //nazwy s¹ identyczne
 	if (builtYear == 0) return false; //z³y rok
 	if (length <= 0) return false; //niepoprawna d³ugoœæ drogi
 	City *c1 = cityHashTableAdd(&(map->cities), city1);

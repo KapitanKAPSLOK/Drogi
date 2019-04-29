@@ -11,7 +11,7 @@
 
 
 int main() {
-  /*
+  
   char const* str;
   
   Map* m = newMap();
@@ -51,7 +51,7 @@ int main() {
   free((void *)str);
   
   deleteMap(m);
-  */
+ 
  
   return 0;
 }

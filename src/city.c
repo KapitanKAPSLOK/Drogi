@@ -52,7 +52,9 @@ void cityHashTableEnlarge(CityHashTable **t) {
 
 //³¹czy dwa miasta drog¹, zwraca true jeœli uda siê dodaæ drogê lub false jeœli nie
 bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear) {
-	
+
+	if (roadListContain(c1->roads, c2)) return false; //droga ju¿ istnieje
+
 	//tworzenie drogi
 	Road *r = malloc(sizeof(*r));
 	if (r == NULL) return false; //nie uda³o siê zaalokowaæ pamiêci
