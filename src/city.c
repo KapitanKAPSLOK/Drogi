@@ -133,6 +133,25 @@ void cityListDelete(CityList *l) {
 	free(l);
 }
 
+///usuwa element r z listy miast
+void cityListDeleteElement(CityList **l, City *r) {
+	if (l == NULL || r == NULL) return;
+	if ((*l)->c == r) { //element r znajduje siê na pocz¹tku
+		CityList *temp = *l;
+		*l = (*l)->next;
+		free(temp);
+	}
+	while ((*l)->next != NULL) {
+		if ((*l)->next->c == r) {
+			CityList *temp = (*l)->next;
+			(*l)->next = (*l)->next->next;
+			free(temp);
+			return;
+		}
+	}
+	return;
+}
+
 //zwalnia pamiêæ po elementach przechowywanych w liœcie
 void cityListDeleteElements(CityList *l) {
 	while (l != NULL) {

@@ -82,18 +82,38 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 	if (c == NULL) return false; //miasto o podanej nazwie nie istnieje
 	if (roadListContain(r->roads, c)) return false; //droga krajowa przebiega ju¿ przez to miasto
 	CityList *cit = routeMakeCityList(r);
-	RoadList *extendRoads = connectCitiesExtend(map->cities, r->end->name, city, cit);
+	RoadList *extendRoads = connectCitiesExtend(r->end, c, cit, false);
 	if (extendRoads == NULL) return false; //nie uda³o siê przed³u¿yæ drogi
 	roadListAddList(&(r->roads), extendRoads);
 	r->end = c;
 	return true;
 }
-//
-////Usuwa odcinek drogi miêdzy dwoma ró¿nymi miastami.
-//bool removeRoad(Map *map, const char *city1, const char *city2) {
-//	//TODO
-//}
-//
+
+//Usuwa odcinek drogi miêdzy dwoma ró¿nymi miastami.
+bool removeRoad(Map *map, const char *city1, const char *city2) {
+	City *c1 = cityHashTableFind(map->cities, city1);
+	City *c2 = cityHashTableFind(map->cities, city2);
+	if (c1 == NULL || c2 == NULL) return false; //któreœ z podanych miast nie istnieje
+	RouteList *route = map->routes;
+	while (route != NULL) {
+		if (!routeCanExtend(route->r, c1, c2)) return false;
+		route = route->next;
+	}
+	//wszystkie drogi krajowe zosta³y sprawdzone, mo¿na zacz¹æ je zmieniaæ
+	Road *r = roadListContain(c1->roads, c2);
+	while (route != NULL) {
+		routeFix(route->r, c1, c2);
+		roadListDeleteElement(&(route->r->roads), r);
+		route = route->next;
+	}
+	//drogi krajowe maj¹ zmienione trasy, mo¿na bezpiecznie usun¹æ odcinek drogi
+	roadListDeleteElement(&(c1->roads), r);
+	roadListDeleteElement(&(c2->roads), r);
+	free(r);
+
+	return true;
+}
+
 ////Udostêpnia informacje o drodze krajowej.
 //char const* getRouteDescription(Map *map, unsigned routeId) {
 //	//TODO

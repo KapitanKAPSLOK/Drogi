@@ -85,13 +85,13 @@ RoadList *roadListReverse(RoadList *l) {
 	return prev;
 }
 
-//zwraca true jeœli któraœ z dróg w liœcie l dochodzi do miasta c
-bool roadListContain(RoadList *l, City *c) {
+//jeœli któraœ z dróg w liœcie l dochodzi do miasta c zwraca wskaŸnik do niej w przeciwnym razie NULL
+Road *roadListContain(RoadList *l, City *c) {
 	while (l != NULL) {
-		if (!strcmp(l->r->city1->name, c->name) || !strcmp(l->r->city2->name, c->name)) return true;
+		if (roadConnectCity(l->r,c)) return l->r;
 		l = l->next;
 	}
-	return false;
+	return NULL;
 }
 ///////////////////
 
@@ -107,5 +107,11 @@ bool roadRepair(Road *r, int year) {
 City *roadGetCity(Road *r, City *c) {
 	if (r->city1 != c) return r->city1;
 	return r->city2;
+}
+
+//sprawdza czy dana droga dochodzi do podanego miasta
+bool roadConnectCity(Road *r, City *c) {
+	if (!strcmp(r->city1->name, c->name) || !strcmp(r->city2->name, c->name)) return true;
+	return false;
 }
 

@@ -33,6 +33,9 @@ typedef struct CityHashTable {
 ///usuwa listê
 void cityListDelete(CityList *l);
 
+///usuwa element r z listy miast
+void cityListDeleteElement(CityList **l, City *r);
+
 //zwalnia pamiêæ po elementach przechowywanych w liœcie
 void cityListDeleteElements(CityList *l);
 

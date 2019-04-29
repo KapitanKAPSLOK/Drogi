@@ -41,7 +41,7 @@ Road *roadListFindStr(RoadList *l, const char *str);
 RoadList *roadListReverse(RoadList *l);
 
 ///zwraca true jeœli któraœ z dróg w liœcie l dochodzi do miasta c
-bool roadListContain(RoadList *l, City *c);
+Road *roadListContain(RoadList *l, City *c);
 
 
 ///zmienia rok ostatniej modyfikacji drogi
@@ -49,3 +49,6 @@ bool roadRepair(Road *r, int year);
 
 ///zwraca jedno z miast, które ³¹czy droga, ale ró¿ne od miasta c
 City *roadGetCity(Road *r, City *c);
+
+///sprawdza czy dana droga dochodzi do podanego miasta
+bool roadConnectCity(Road *r, City *c);

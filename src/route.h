@@ -42,4 +42,10 @@ CityList *routeMakeCityList(Route *r);
 RoadList *connectCities(CityHashTable *t, const char *c1, const char *c2);
 
 ///zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
-RoadList *connectCitiesExtend(CityHashTable *t, const char *c1, const char *c2, CityList *cities);
+RoadList *connectCitiesExtend(City *start, City *end, CityList *cities, bool notDirectly);
+
+///sprawdza czy mo¿na usun¹æ odcinek drogi tak aby mo¿na by³o naprawiæ drogê krajow¹
+bool routeCanExtend(Route *r, City *c1, City *c2);
+
+///dodaje do drogi krajowej najkrótsz¹ œcie¿kê ³¹cz¹c¹ c1 i c2, ale nie bezpoœrednio
+void routeFix(Route *r, City *c1, City *c2);

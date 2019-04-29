@@ -4,6 +4,7 @@
 #include "min_heap.h"
 
 #include <limits.h>
+#include<string.h>
 
 int min(int a, int b) {
 	return (a < b) ? a : b;
@@ -93,6 +94,48 @@ Route *routeListFind(RouteList *l, unsigned nr) {
 	}
 	return NULL;
 }
+
+//dodaje do drogi krajowej najkrótsz¹ œcie¿kê ³¹cz¹c¹ c1 i c2, ale nie bezpoœrednio
+void routeFix(Route *r, City *c1, City *c2) {
+	RoadList *l = r->roads;
+	while (l != NULL) {
+		if (!strcmp(l->r->city1->name, c1->name)) {
+			if (!strcmp(l->r->city1->name, c1->name)) {
+				//odcinek drogi nale¿y do tej drogi krajowej
+				CityList *temp = routeMakeCityList(r);
+				if (temp == NULL) return;
+				cityListDeleteElement(&temp, c2);
+				RoadList *fix=connectCitiesExtend(c1, c2, temp, true); //zawsze siê uda, bo by³o wczeœniej sprawdzane
+				
+				//pod³¹czanie nowego kawa³ka drogi po odcinku który ma zostaæ usuniêty
+				roadListAddList(&(l->next), fix);
+			}
+			//nie mo¿e byæ pêtli, wiêc tylko jeden odcinek drogi z danego miasta mo¿e byæ wykorzystany
+			return;
+		}
+	}
+	return;
+}
+
+//sprawdza czy mo¿na usun¹æ odcinek drogi tak aby mo¿na by³o naprawiæ drogê krajow¹
+bool routeCanExtend(Route *r, City *c1, City *c2) {
+	RoadList *l = r->roads;
+	while (l != NULL) {
+		if (roadConnectCity(l->r,c1) || roadConnectCity(l->r, c2)) {
+			if (roadConnectCity(l->r,c1) && roadConnectCity(l->r, c2)) {
+				//odcinek drogi nale¿y do tej drogi krajowej
+				CityList *temp=routeMakeCityList(r);
+				if (temp == NULL) return false;
+				cityListDeleteElement(&temp, c2);
+				return !connectCitiesExtend(c1, c2, temp, true);
+			}
+			//nie mo¿e byæ pêtli, wiêc tylko jeden odcinek drogi z danego miasta mo¿e byæ wykorzystany
+			return true;
+		}
+	}
+	return true;
+}
+
 
 //alokuje rekurencyjnie pamiêæ pod zmienn¹ temporaryData potrzebn¹ podczas wyszukiwania œcie¿ki miêdzy mistami
 bool prepareCities(City *c) {
@@ -202,8 +245,8 @@ RoadList *connectCities(CityHashTable *t, const char *c1, const char *c2) {
 }
 
 
-
 //alokuje rekurencyjnie pamiêæ pod zmienn¹ temporaryData potrzebn¹ podczas wyszukiwania œcie¿ki miêdzy mistami
+//prowadzi drogê tylko przez miasta nie nale¿¹ce do listy cities
 bool prepareCitiesExtend(City *c, CityList *cities) {
 	if (c->temporaryData != NULL) return true; //to miasto ju¿ sota³o przygotowane
 
@@ -225,9 +268,8 @@ bool prepareCitiesExtend(City *c, CityList *cities) {
 }
 
 //zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
-RoadList *connectCitiesExtend(CityHashTable *t, const char *c1, const char *c2, CityList *cities) {
-	City *start = cityHashTableFind(t, c1);
-	City *end = cityHashTableFind(t, c2);
+//prowadzi drogê tylko przez miasta nie nale¿¹ce do listy cities
+RoadList *connectCitiesExtend(City *start, City *end, CityList *cities, bool notDirectly) {
 	if (start == NULL || end == NULL) return NULL; //któreœ z miast nie istnieje
 	MinHeap *h = minHeapCreate();
 	if (h == NULL) return NULL; //nie uda³o siê zalokowaæ pamiêci na kopiec
@@ -249,18 +291,20 @@ RoadList *connectCitiesExtend(CityHashTable *t, const char *c1, const char *c2, 
 		RoadList *road = act->roads;
 		while (road != NULL) {
 			City *temp = roadGetCity(road->r, act);
-			if (!cityListFind(cities, temp)) { //droga krajowa nie mo¿e mieæ samoprzeciêæ
-				if ((int)(road->r->length) + act->temporaryData[0] < temp->temporaryData[0]) {
-					//znaleziono krótsz¹ œcie¿kê do miasta temp
-					temp->temporaryData[0] = road->r->length + act->temporaryData[0];
-					if (temp->temporaryData[1] > 0) {
-						//miasto zosta³o ju¿ dodane do kopca 
-						//odleg³oœæ od miasta pocz¹tkowego zmniejszy³a siê, wiêc miasto byæ mo¿e powinno byæ wy¿ej w kopcu
-						minHeapRepairUp(h, temp->temporaryData[1] + 1);
-					}
-					else {
-						//domyœlna wartoœæ -1 nie zosta³a zmieniona, a wiêc miasta nie by³o jeszcze w kopcu
-						minHeapAdd(h, temp);
+			if (!(notDirectly && (act==start && temp==end))) { //sprawdza czy jest to bezpoœrednie po³¹czenie miêdzy c1 i c2
+				if (!cityListFind(cities, temp)) { //droga krajowa nie mo¿e mieæ samoprzeciêæ
+					if ((int)(road->r->length) + act->temporaryData[0] < temp->temporaryData[0]) {
+						//znaleziono krótsz¹ œcie¿kê do miasta temp
+						temp->temporaryData[0] = road->r->length + act->temporaryData[0];
+						if (temp->temporaryData[1] > 0) {
+							//miasto zosta³o ju¿ dodane do kopca 
+							//odleg³oœæ od miasta pocz¹tkowego zmniejszy³a siê, wiêc miasto byæ mo¿e powinno byæ wy¿ej w kopcu
+							minHeapRepairUp(h, temp->temporaryData[1] + 1);
+						}
+						else {
+							//domyœlna wartoœæ -1 nie zosta³a zmieniona, a wiêc miasta nie by³o jeszcze w kopcu
+							minHeapAdd(h, temp);
+						}
 					}
 				}
 			}
@@ -268,8 +312,14 @@ RoadList *connectCitiesExtend(CityHashTable *t, const char *c1, const char *c2, 
 		}
 	}
 	//we wszystkich miastach po³¹czonych z miastem pocz¹tkowym zosta³a ustawiona minimalna odleg³oœæ od niego
+	if (end->temporaryData[1] == -1) {
+		//miasto nie by³o odwiedzone z czego wynika,
+		//¿e notDirectly jest true i jedyna œcie¿ka do miasta docelowego prowadzi³a bezpoœrednio z c1 o c2
+		cityDeleteTemporaryData(start);
+		return NULL;
+	}
 	int age;
-	bool ambiguity;
+	bool ambiguity; //przechowuje informacje czy wyznaczanie najkrótszej trasy by³o jednoznaczne
 	RoadList *l = getMinimalRoute(start, end, &age, &ambiguity);
 	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiêci tymczasowej
 	if (ambiguity) return NULL; //nie uda³o siê jednoznacznie wyznaczyæ minimalnej œcie¿ki
