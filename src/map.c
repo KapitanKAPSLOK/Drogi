@@ -2,6 +2,7 @@
 #include "city.h"
 #include "route.h"
 #include "road.h"
+#include "myString.h"
 
 #include <string.h>
 
@@ -114,7 +115,23 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	return true;
 }
 
-////Udostêpnia informacje o drodze krajowej.
-//char const* getRouteDescription(Map *map, unsigned routeId) {
-//	//TODO
-//}
+
+//Udostêpnia informacje o drodze krajowej.
+char const* getRouteDescription(Map *map, unsigned routeId) {
+	Route *r = routeListFind(map->routes, routeId);
+	if (r == NULL) return NULL; //nie istnieje droga krajowa o podanym numerze
+	char *str = "";
+	if (!myStringAppendInt(str, routeId)) return NULL; //nie uda³o siê zaalokowaæ pamiêci
+	RoadList *l = r->roads;
+	if (l == NULL) return str;
+	l=roadListReverse(l); //drogi przechowywane s¹ w odwrotnej kolejnoœci
+	City *c=r->start;
+	if (!myStringAppendString(str, ";")) return NULL;
+	if (!myStringAppendString(str, c->name)) return NULL;
+	while (l != NULL) {
+		if (!roadGetDescription(l->r, c)) return NULL; //jeœi prawdziwe znaczy zabrak³o pamiêci
+		c = roadGetCity(l->r, c);
+		l = l->next;
+	}
+	return str;
+}

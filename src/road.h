@@ -52,3 +52,6 @@ City *roadGetCity(Road *r, City *c);
 
 ///sprawdza czy dana droga dochodzi do podanego miasta
 bool roadConnectCity(Road *r, City *c);
+
+///zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
+char *roadGetDescription(Road *r, City *c);

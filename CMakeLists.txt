@@ -31,7 +31,9 @@ set(SOURCE_FILES
 	src/route.c
 	src/route.h
 	src/min_heap.c
-	src/min_heap.h)
+	src/min_heap.h
+	src/myString.c
+	src/mystring.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})

@@ -1,4 +1,5 @@
 #include "road.h"
+#include "myString.h"
 
 #include<string.h>
 
@@ -113,5 +114,18 @@ City *roadGetCity(Road *r, City *c) {
 bool roadConnectCity(Road *r, City *c) {
 	if (!strcmp(r->city1->name, c->name) || !strcmp(r->city2->name, c->name)) return true;
 	return false;
+}
+
+//zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
+char *roadGetDescription(Road *r, City *c) {
+	City *temp=roadGetCity(r, c);
+	char *str = ";";
+	//jeœli przy do³¹czaniu napisów zostanie zwrócony NULL znaczy, ¿e zabrak³o pamiêci, wtedy zwracany jest NULL
+	if (!(str = myStringAppendInt(str, r->length))) return NULL;
+	if (!(str = myStringAppendInt(str, ";"))) return NULL;
+	if (!(str = myStringAppendInt(str, r->modificationDate))) return NULL;
+	if (!(str = myStringAppendInt(str, ";"))) return NULL;
+	if (!(str = myStringAppendInt(str, roadGetCity(r,c)))) return NULL;
+	return str;
 }
 
