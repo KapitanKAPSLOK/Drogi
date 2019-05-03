@@ -1,5 +1,5 @@
 /** @file
- * Interfejs klasy odcinków dróg
+ * Interfejs klasy odcinków dróg.
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
  * @date 29.04.2019
@@ -21,43 +21,89 @@ typedef struct Road {
 
 ///struktura przechowuj¹ca listê dróg
 typedef struct RoadList {
-	Road* r;
-	struct RoadList *next;
+	Road* r; ///< wskaŸnik na drogê
+	struct RoadList *next; ///< wskaŸnik do nastêpnego elementu listy
 }RoadList;
 
-///dodaje element na pocz¹tek listy dróg
+/** @brief Dodaje drogê @p r na pocz¹tek listy odcinków dróg.
+* @param[in, out] l  - wskaŸnik na pierwszy element listy odcinków dróg
+* @param[in] r       - wskaŸnik na odcinek drogi, który ma zostaæ dodany
+* @return @p true jeœli uda³o siê dodaæ odcinek drogi lub @p false w przeciwnym wypadku
+*/
 bool roadListAdd(RoadList **l, Road *r);
 
-///dodaje na pocz¹tek listy l1 listê l2
+/** @brief dodaje na pocz¹tek listy pod wskaŸnikiem @p l1 listê pod wskaŸnikiem @p l2.
+* @param[in, out] l1  - wskaŸnik na listê, na której pocz¹tek zostanie dodana druga lista
+* @param[in] l2       - wskaŸnik na listê, kktóra ma zostaæ dodana
+*/
 void roadListAddList(RoadList **l1, RoadList *l2);
 
-///usuwa listê dróg
+/** @brief Usuwa listê dróg krajowych
+* Zwalnia pamiêæ po strukturze listy, ale nie zwalnia pamiêæ po przechowywanych w niej odcinkach dróg.
+* @param[in] l - wskaŸnik na usuwan¹ listê odcinków dróg.
+*/
 void roadListDelete(RoadList *l);
 
-///usuwa element r z listy dróg
+/** @brief Usuwa element @p r z listy odcinków dróg.
+* @param[in, out] l  - wskaŸnik na listê, z której ma zostaæ usuniêty element
+* @param[in] r       - element do usuniêcia z listy
+*/
 void roadListDeleteElement(RoadList **l, Road *r);
 
-///zwalnia pamiêæ po elementach przechowywanych w liœcie
+/** @brief Zwalnia pamiêæ po odcinkach dróg przechowywanych w liœcie
+* @param[in] r - lista, w której ma zostaæ zwolniona pamiêæ po przechowywanych przez ni¹ elementach
+*/
 void roadListDeleteElements(RoadList *r);
 
-///zwraca wskaŸnik do drogi zawieraj¹cej z miasta o nazwie str lub NULL jeœli nie ma takiej drogi nie ma na liœcie
+/** @brief Szuka w liœcie odcinka drogi z lub do miasta o nazwie @p str.
+* Wyszukuje pierwsze miasto spe³niaj¹ce warunki.
+* @param[in] l    - przeszukiwana lista odcinków dróg
+* @param[in] str  - wskaŸnik na napis reprezentuj¹cy nazwê miasta
+* @return WskaŸnik do znalezionej drogi lub @p NULL jeœli nie znaleziono drogi spe³niaj¹cej warunki
+*/
 Road *roadListFindStr(RoadList *l, const char *str);
 
-///odwraca listê
+///Odwraca podan¹ listê.
+/// @return Odwrócona lista lub NULL, jeœli nie uda³o siê tego zrobiæ
 RoadList *roadListReverse(RoadList *l);
 
-///zwraca true jeœli któraœ z dróg w liœcie l dochodzi do miasta c
+/** @brief Wyszukuje w liœcie drogê prowadz¹c¹ do miasta @p c.
+* Znajduje pierwsze wyst¹pienie odcinka drogi spe³niaj¹cego warunki.
+* @param[in] l    - przeszukiwana lista odcinków dróg
+* @param[in] c  - wskaŸnik na miasto, do którego szukana jest droga
+* @return wskaŸnik do znalezionej drogi lub @p NULL jeœli nie znaleziono takiej
+*/
 Road *roadListContain(RoadList *l, City *c);
 
-
 ///zmienia rok ostatniej modyfikacji drogi
+/** @brief Zmienia rok ostatniej modyfikacji odcinka drogi.
+* Jeœli nowa data jest póŸniejsza od aktualnej daty ostatniej modyfikacji @p r nic nie robi.
+* @param[in, out] r  - wskaŸnik na modyfikowan¹ drogê
+* @param[in] year    - rok nowej daty ostatniej modyfikacji
+* @return @p true jeœli uda siê zmodyfikowaæ datê, @p false w przeciwnym wypadku
+*/
 bool roadRepair(Road *r, int year);
 
-///zwraca jedno z miast, które ³¹czy droga, ale ró¿ne od miasta c
+/** @brief Znajduje miasto, które ³¹czy odcinek drogi, ale ró¿ne od miasta @p c
+* Jeœli obydwa miasta s¹ ró¿ne zwraca pierwsze miasto zapisane w strukrurze drogi @p r (@p r->city1).
+* @param[in] r - wskaŸnik na rozpatrywany odcinek drogi
+* @param[in] c - wskaŸnik na miasto, które nie zostanie zwrócone
+* @return wskaŸnik na znalezione miasto.
+*/
 City *roadGetCity(Road *r, City *c);
 
-///sprawdza czy dana droga dochodzi do podanego miasta
+/** @brief Sprawdza czy podany odcinek drogi prowadzi do miasta @p c
+* @param[in] r - wskaŸnik na rozpatrywan¹ drogê
+* @param[in] c - wskaŸnik na miasto, do którego po³aæzenie jest sprawdzane
+* @return @p true jeœli odcinek drogi jest po³¹czony bezpoœrednio z @p c, @p false w przeciwnym razie
+*/
 bool roadConnectCity(Road *r, City *c);
 
-///zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
+/** Wypisuje informacje o drodze krajowej.
+* Dane s¹ postaci ";d³ugoœæ;data modyfikacji;miasto", 
+* gdzie miasto jest jedno z miast, które ³¹czy odcinek drogi, ale ró¿ne od @p c
+* @param[in] r - wskaŸnik na odcinek drogim którego informacje s¹ zwracane
+* @param[in] c - wskaŸnik na miasto, którego nazwa nie jest wypisywana
+* @return wskaŸnik na napis lub @p NULL jeœli nie uda³o siê zaalokowaæ pamiêci
+*/
 char *roadGetDescription(Road *r, City *c);
