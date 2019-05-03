@@ -52,11 +52,11 @@ void minHeapRepairDown(MinHeap *h){
 }
 
 //tworzy nowy kopiec
-MinHeap* minHeapCreate() {
+MinHeap* minHeapCreate(void) {
 	MinHeap* h = malloc(sizeof(MinHeap));
 	if (h == NULL) return NULL; //nie uda³o siê zaalokowac pamiêci na strukturê
 	h->size = 0;
-	h->tab = malloc(10*sizeof(*(h->tab))); //domyœlny pocz¹tkowy rozmiar tablicy to 1
+	h->tab = malloc(10*sizeof(*(h->tab))); //domyœlny pocz¹tkowy rozmiar tablicy to 10
 	if (h->tab == NULL) { //za ma³o pamiêci na tablicê dziesiêcio elementow¹
 		h->tab = malloc(sizeof(*(h->tab)));
 		if (h->tab == NULL) return NULL; //brak pamiêci
