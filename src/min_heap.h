@@ -14,7 +14,7 @@
 typedef struct MinHeap {
 	int size; ///< aktualna iloœæ elementów na kopcu
 	int maxSize; ///< rozmiar zaalokowanej tablicy
-	City **tab;
+	City **tab; ///< tablica przechowuj¹ca elementy kopca
 }MinHeap;
 
 ///tworzy nowy kopiec

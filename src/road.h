@@ -14,9 +14,9 @@
 typedef struct City City;
 ///struktura przechowuj¹ca informacje o drogach
 typedef struct Road {
-	unsigned length;
-	int modificationDate;
-	City *city1, *city2;
+	unsigned length; ///< d³ugoœæ odcinka drogi
+	int modificationDate; ///< data ostatniej modyfikacji odcinka (data budowy lub remontu)
+	City *city1, *city2; ///< miasta, które ³¹czy odcinek drogi
 }Road;
 
 ///struktura przechowuj¹ca listê dróg

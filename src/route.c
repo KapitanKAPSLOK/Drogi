@@ -19,10 +19,12 @@ void routeListDelete(RouteList *l) {
 	RouteList *p = l->next;
 	RouteList *temp;
 	while (p != NULL) {
+		free(p->r);
 		temp = p->next;
 		free(p);
 		p = temp;
 	}
+	free(l->r);
 	free(l);
 }
 
@@ -111,7 +113,7 @@ void routeFix(Route *r, City *c1, City *c2) {
 				CityList *temp = routeMakeCityList(r);
 				if (temp == NULL) return;
 				cityListDeleteElement(&temp, c2);
-				RoadList *fix=connectCitiesExtend(c1, c2, temp, true); //zawsze siê uda, bo by³o wczeœniej sprawdzane
+				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze siê uda, bo by³o wczeœniej sprawdzane
 				
 				//pod³¹czanie nowego kawa³ka drogi po odcinku który ma zostaæ usuniêty
 				roadListAddList(&(l->next), fix);
@@ -124,7 +126,7 @@ void routeFix(Route *r, City *c1, City *c2) {
 }
 
 //sprawdza czy mo¿na usun¹æ odcinek drogi tak aby mo¿na by³o naprawiæ drogê krajow¹
-bool routeCanExtend(Route *r, City *c1, City *c2) {
+bool routeCanChange(Route *r, City *c1, City *c2) {
 	RoadList *l = r->roads;
 	while (l != NULL) {
 		if (roadConnectCity(l->r,c1) || roadConnectCity(l->r, c2)) {
@@ -133,30 +135,12 @@ bool routeCanExtend(Route *r, City *c1, City *c2) {
 				CityList *temp=routeMakeCityList(r);
 				if (temp == NULL) return false;
 				cityListDeleteElement(&temp, c2);
-				return !connectCitiesExtend(c1, c2, temp, true);
+				return !connectCities(c1, c2, temp, true);
 			}
 			//nie mo¿e byæ pêtli, wiêc tylko jeden odcinek drogi z danego miasta mo¿e byæ wykorzystany
 			return true;
 		}
-	}
-	return true;
-}
-
-
-//alokuje rekurencyjnie pamiêæ pod zmienn¹ temporaryData potrzebn¹ podczas wyszukiwania œcie¿ki miêdzy mistami
-bool prepareCities(City *c) {
-	if (c->temporaryData != NULL) return true; //to miasto ju¿ sota³o przygotowane
-	//miasto nie by³o jeszcze odwiedzone, alokacja dwóch pól na dane i inicjalizacja ich
-	c->temporaryData = malloc(2 * sizeof(*(c->temporaryData)));
-	if (c->temporaryData == NULL) return false; //nie uda³o siê zaalokowaæ pamiêci
-	c->temporaryData[0] = INT_MAX; //na tym polu bêdzie odleg³oœæ od miasta pocz¹tkowego
-	c->temporaryData[1] = -1; //na tym polu bêdzie indeks w tablicy w strukturze kopca
-	//alokowanie pamiêci rekurencyjnie
-	RoadList *l = c->roads;
-	while (l != NULL) {
-		if (!prepareCities(l->r->city1) || !prepareCities(l->r->city2)) {
-			return false; //nie uda³o siê zaalokowaæ potrzebnej pamiêci
-		}	
+		l = l->next;
 	}
 	return true;
 }
@@ -200,63 +184,11 @@ RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 	return minimalRoute;
 }
 
-//zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
-RoadList *connectCities(CityHashTable *t, const char *c1, const char *c2) {
-	City *start = cityHashTableFind(t, c1);
-	City *end = cityHashTableFind(t, c2);
-	if (start == NULL || end == NULL) return NULL; //któreœ z miast nie istnieje
-	MinHeap *h = minHeapCreate();
-	if (h == NULL) return NULL; //nie uda³o siê zalokowaæ pamiêci na kopiec
-	if (!prepareCities(start)) {
-		//nie uda³o siê przygotowaæ pamiêci potrzebnej do dzia³ania algorytmu
-		cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiêci przed wyst¹pieniem b³êdu
-		return NULL; 
-	}
-	if (end->temporaryData == NULL) {
-		//nie ma po³¹czenia miêdzy podanymi miastami
-		cityDeleteTemporaryData(start); //zwalnianie zaalokowanej pamiêci
-		return NULL;
-	}
-	//argumenty funkcji s¹ poprawne i zosta³o zaalokowana pamiêæ i ustawione zmienne pomocnicze
-	start->temporaryData[0] = 0;
-	minHeapAdd(h, start);
-	City *act;
-	while ((act = minHeapPeak(h))) {
-		RoadList *road = act->roads;
-		while (road != NULL) {
-			City *temp = roadGetCity(road->r, act);
-			if ((int)(road->r->length) + act->temporaryData[0] < temp->temporaryData[0]) {
-				//znaleziono krótsz¹ œcie¿kê do miasta temp
-				temp->temporaryData[0] = road->r->length + act->temporaryData[0];
-				if (temp->temporaryData[1] > 0) {
-					//miasto zosta³o ju¿ dodane do kopca 
-					//odleg³oœæ od miasta pocz¹tkowego zmniejszy³a siê, wiêc miasto byæ mo¿e powinno byæ wy¿ej w kopcu
-					minHeapRepairUp(h, temp->temporaryData[1] + 1);
-				}
-				else {
-					//domyœlna wartoœæ -1 nie zosta³a zmieniona, a wiêc miasta nie by³o jeszcze w kopcu
-					minHeapAdd(h, temp);
-				}
-			}
-			road = road->next;
-		}
-	}
-	//we wszystkich miastach po³¹czonych z miastem pocz¹tkowym zosta³a ustawiona minimalna odleg³oœæ od niego
-	int age;
-	bool ambiguity;
-	RoadList *l = getMinimalRoute(start, end, &age, &ambiguity);
-	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiêci tymczasowej
-	if (ambiguity) return NULL; //nie uda³o siê jednoznacznie wyznaczyæ minimalnej œcie¿ki
-	return l;
-}
-
-
 //alokuje rekurencyjnie pamiêæ pod zmienn¹ temporaryData potrzebn¹ podczas wyszukiwania œcie¿ki miêdzy mistami
 //prowadzi drogê tylko przez miasta nie nale¿¹ce do listy cities
-bool prepareCitiesExtend(City *c, CityList *cities) {
+bool prepareCities(City *start, City *end, City *c, CityList *cities, bool notDirectly) {
+	if (cityListFind(cities, c)) return true; //droga krajowa nie mo¿e mieæ samoprzeciêæ
 	if (c->temporaryData != NULL) return true; //to miasto ju¿ sota³o przygotowane
-
-	if (!cityListFind(cities, c)) return true; //droga krajowa nie mo¿e mieæ samoprzeciêæ
 
 	//miasto nie by³o jeszcze odwiedzone, alokacja dwóch pól na dane i inicjalizacja ich
 	c->temporaryData = malloc(2 * sizeof(*(c->temporaryData)));
@@ -266,8 +198,11 @@ bool prepareCitiesExtend(City *c, CityList *cities) {
 	//alokowanie pamiêci rekurencyjnie
 	RoadList *l = c->roads;
 	while (l != NULL) {
-		if (!prepareCities(l->r->city1) || !prepareCities(l->r->city2)) {
-			return false; //nie uda³o siê zaalokowaæ potrzebnej pamiêci
+		City *temp = roadGetCity(l->r,c);
+		if (!(notDirectly && (c == start && temp == end))) { //sprawdza czy jest to bezpoœrednie po³¹czenie miêdzy c1 i c2
+			if (!prepareCities(start, end, temp, cities, notDirectly)) {
+				return false; //nie uda³o siê zaalokowaæ pamiêci
+			}
 		}
 	}
 	return true;
@@ -275,11 +210,11 @@ bool prepareCitiesExtend(City *c, CityList *cities) {
 
 //zwraca najkrótszy ci¹g dróg miêdzy miastami, jeœli nie istnieje lub w przypadku b³êdu zwraca NULL
 //prowadzi drogê tylko przez miasta nie nale¿¹ce do listy cities
-RoadList *connectCitiesExtend(City *start, City *end, CityList *cities, bool notDirectly) {
+RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirectly) {
 	if (start == NULL || end == NULL) return NULL; //któreœ z miast nie istnieje
 	MinHeap *h = minHeapCreate();
 	if (h == NULL) return NULL; //nie uda³o siê zalokowaæ pamiêci na kopiec
-	if (!prepareCities(start)) {
+	if (!prepareCities(start, end, start, cities, notDirectly)) {
 		//nie uda³o siê przygotowaæ pamiêci potrzebnej do dzia³ania algorytmu
 		cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiêci przed wyst¹pieniem b³êdu
 		return NULL;

@@ -68,9 +68,11 @@ bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) 
 	if (!strcmp(city1, city2)) return false; //nazwy miast s¹ takie same
 	if (routeId < 1 || routeId>999) return false; //niepoprawny identyfikator drogi krajowej
 	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze ju¿ istnieje
-	RoadList *r = connectCities(map->cities, city1, city2);
+	City *c1 = cityHashTableFind(map->cities, city1);
+	City *c2 = cityHashTableFind(map->cities, city2);
+	RoadList *r = connectCities(c1, c2, NULL, false);
 	if (r == NULL) return false; //nie uda³o siê wyznaczyæ jednoznacznie najkrótszej drogi miêdzy miastami
-	Route *route = routeMake(routeId, r, cityHashTableFind(map->cities,city1), cityHashTableFind(map->cities, city2));
+	Route *route = routeMake(routeId, r, c1, c2);
 	if (route == NULL) return false; //nie uda³o siê utworzyæ drogi krajowej
 	if(routeListAdd(&(map->routes), route)) return true;
 	return false;
@@ -84,7 +86,7 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 	if (c == NULL) return false; //miasto o podanej nazwie nie istnieje
 	if (roadListContain(r->roads, c)) return false; //droga krajowa przebiega ju¿ przez to miasto
 	CityList *cit = routeMakeCityList(r);
-	RoadList *extendRoads = connectCitiesExtend(r->end, c, cit, false);
+	RoadList *extendRoads = connectCities(r->end, c, cit, false);
 	if (extendRoads == NULL) return false; //nie uda³o siê przed³u¿yæ drogi
 	roadListAddList(&(r->roads), extendRoads);
 	r->end = c;
@@ -98,7 +100,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	if (c1 == NULL || c2 == NULL) return false; //któreœ z podanych miast nie istnieje
 	RouteList *route = map->routes;
 	while (route != NULL) {
-		if (!routeCanExtend(route->r, c1, c2)) return false;
+		if (!routeCanChange(route->r, c1, c2)) return false;
 		route = route->next;
 	}
 	//wszystkie drogi krajowe zosta³y sprawdzone, mo¿na zacz¹æ je zmieniaæ

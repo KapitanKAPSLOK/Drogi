@@ -15,9 +15,9 @@ typedef struct RoadList RoadList;
 
 ///struktura przechowuj¹ca informacje o miastach
 typedef struct City {
-	char* name;
-	int *temporaryData;
-	RoadList *roads;
+	char* name; ///< nazwa miasta
+	int *temporaryData; ///< miejsce, gdzie algorytmy korzystaj¹ce ze struktury mog¹ umieszczaæ dane tymczasowe
+	RoadList *roads;  ///< lista odcinków dróg jakie wychodz¹ z miasta
 }City;
 
 ///struktura przechowuj¹ca listê miast
@@ -28,10 +28,10 @@ typedef struct CityList {
 
 ///struktura hash tablicy dla miast
 typedef struct CityHashTable {
-	int a, b;
-	int size;
-	int numberOfElements;
-	CityList **tab;
+	int a, b;  ///< wspó³czynniki wykorzystywane przy hashowaniu
+	int size;  ///< aktualny rozmiar tablicy tab na dane
+	int numberOfElements; ///< iloœæ elementów przechowywana w tablicy
+	CityList **tab; ///< tablica rozmiaru size przechowuj¹ca listy elementów
 }CityHashTable;
 
 //////////////////cityList/////////////////
