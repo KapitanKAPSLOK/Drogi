@@ -265,7 +265,7 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 	return table;
 }
 
-///usuwa strukturê
+//usuwa strukturê
 void cityHashTableDelete(CityHashTable *t) {
 	if (t == NULL) return;
 	for (int i = 0; i < t->size; ++i) {
@@ -276,7 +276,7 @@ void cityHashTableDelete(CityHashTable *t) {
 	free(t);
 }
 
-///zwraca wskaŸnik na miasto o nazwie str (dodaje je jeœli nie istnieje), w przypadku b³êdu zwraca NULL
+//zwraca wskaŸnik na miasto o nazwie str (dodaje je jeœli nie istnieje), w przypadku b³êdu zwraca NULL
 City *cityHashTableAdd(CityHashTable **t, const char *str) {
 	City *c = cityMake(str);
 	if (c == NULL) return NULL; //nie uda³o siê utworzyæ miasta

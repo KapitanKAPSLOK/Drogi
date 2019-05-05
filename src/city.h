@@ -1,5 +1,5 @@
 /** @file
- * Interfejs klasy miast
+ * Interfejs klasy miast.
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
  * @date 03.04.2019
@@ -22,8 +22,8 @@ typedef struct City {
 
 ///struktura przechowuj¹ca listê miast
 typedef struct CityList {
-	City* c;
-	struct CityList *next;
+	City* c; ///< wskaŸnik na przechowywane w strukturze miasto
+	struct CityList *next; ///< wskaŸnik na nastêpny element
 }CityList;
 
 ///struktura hash tablicy dla miast
@@ -36,51 +36,105 @@ typedef struct CityHashTable {
 
 //////////////////cityList/////////////////
 
-///usuwa listê
+/** Usuwa listê miast, ale nie usuwa samych miast.
+@param[in] l - lista miast
+*/
 void cityListDelete(CityList *l);
 
-///usuwa element r z listy miast
+/** Usuwa element z listy miast
+@param[in, out] l  - wskaŸnik na listê miast
+@param[in] r       - element, który ma byc usuniêty
+*/
 void cityListDeleteElement(CityList **l, City *r);
 
-//zwalnia pamiêæ po elementach przechowywanych w liœcie
+/** Zwalnia pamiêæ po elementach przechowywanych w liœcie.
+Usuwa zarówno przechowywane miasta jak i nale¿¹ce do nich odcinki dróg
+@param[in] l - lista miast
+*/
 void cityListDeleteElements(CityList *l);
 
-///dodaje element do listy
+/** Dodaje element na pocz¹tek listy.
+@param[in, out] l  - wskaŸnik na listê miast
+@param[in] c       - wskaŸnik na miasto, które ma zostaæ dodane
+@return @p true jeœli uda³o siê dodaæ element lub @p false jeœli zabrak³o pamiêci
+*/
 bool cityListAdd(CityList **l, City *c);
 
-///dodaje na pocz¹tek listy l1 listê l2
+/** Dodaje na pocz¹tek listy @p l1 listê @p l2
+@param[in, out] - wskaŸnik na listê, do której maj¹ zostaæ dodane elementy
+@param[in] - lista miast, która ma zostaæ dodana
+*/
 void cityListAddList(CityList **l1, CityList *l2);
 
-///zwraca wskaŸnik do szukanego miasta c lub NULL jeœli miasta nie ma na liœcie
+/** Szuka miasta @p c w liœcie @p l.
+Szuka miasta na liœcie o takiej samej nazwie jak podane miasto @p c.
+@param[in] l - przeszukiwana lista miast
+@param[in] c - wskaŸnik na szukane miasto
+@return wskaŸnik do szukanego miasta znajdujacego siê na liœcie lub @p NULL jeœli nie uda³o siê go znaleŸæ
+*/
 City *cityListFind(CityList *l, City *c);
 
-///zwraca wskaŸnik do szukanego miasta c lub NULL jeœli miasta nie ma na liœcie
+/** Szuka miasta o nazwie @p str na liœcie.
+@param[in] l    - lista miast
+@param[in] str  - wskaŸnik na napis reprezentuj¹cy nazwê miasta
+@return wskaŸnik na znalezione miasto lub @p NULL jeœli miasta o podanej nazwie nie by³o na liœcie
+*/
 City *cityListFindStr(CityList *l, const char *str);
 
 ////////////////////cityHashTable/////////////////////////
 
-//tworzy hash table z listy miast, zwraca NULL gdy nie uda siê utworzyæ struktury
+/** Tworzy now¹ hash tablicê z podanej listy miast.
+@param[in] cities          - lista miast, z których ma zostaæ utworzona hash tablica
+@param[in] numberOfCities  - liczba miast znajduj¹cych siê na liœcie @p cities
+@return wskaŸnik na utworzon¹ hash tablicê lub @p NULL jesli nie uda³o siê zaalokowaæ pamiêci
+*/
 CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities);
 
-///usuwa strukturê
+/** Usuwa strukturê.
+Usuwa zarówno strukturê jak i zwalnia pamiêæ po przechowywanych w niej elementach.
+@param[in] t - wskaŸnik na strukturê hash tablicy
+*/
 void cityHashTableDelete(CityHashTable *t);
 
-///dodaje do hash tablicy miasto o podanej nazwie jeœli jeszcze nie istnieje i zwraca wskaŸnik na nie, w przypadku b³êdu zwraca NULL
+/** Dodaje element do hash tablicy.
+Dodaje do tablicy miasto o nazwie reprezentowanej przez napis @p str jeœli jeszcze nie istnieje.
+@param[in, out] t  - wskaŸnik na hash tablicê
+@param[in] str     - wskaŸnik na napis reprezentuj¹cy nazwê miasta
+@return wskaŸnik na dodane miasto lub @p NULL jeœli nie uda³o siê go dodaæ
+*/
 City *cityHashTableAdd(CityHashTable **t, const char *str);
 
-//zwraca wskaŸnij do szukanego miasta lub NULL, gdy takie miasto nie istnieje
+/** Szuka w hash tablicy miasta o nazwie reprezentowanej przez napis @p str.
+@param[in] t   - wskaŸnik na hash table
+@param[in] str - wskaŸnik na napis reprezentuj¹cy nazwê miasta
+@return wskaŸnik na znalezione miasto lub @p NULL jeœli go nie znaleziono
+*/
 City *cityHashTableFind(CityHashTable *t, const char *str);
 
 ///////////////////////inne///////////////////////////
 
-///zwraca hash podanego miasta
+/** Zamienia podane miasto na liczbê.
+@param[in] c - wskaŸnik na miasto
+@return liczba odpowiadaj¹ca danemu miastu
+*/
 unsigned cityHash(City *c);
 
-//³¹czy dwa miasta drog¹, zwraca true jeœli uda siê dodaæ drogê lub false jeœli nie
+/** Dodaje odcinek drogi miêdzy podanymi miastami.
+Odcinek drogi jest dodawany tylko wtedy jeœli nie istnieje bezpoœrednie po³¹czenie miêdzy tymi miastami.
+@param[in] c1, c2      - wskaŸnik na miasta do po³¹czenia odcinkiem drogi
+@param[in] length      - d³ugoœæ nowego odcinka drogi
+@param[in] builtYear   - rok budowy drogi (ostatniej modyfikacji)
+@return @p true jeœli uda³o siê dodaæ odcinek drogi lub @p false w przeciwnym razie
+*/
 bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear);
 
-///usuwa miasto oraz prowadz¹ce do niego drogi
+/** Usuwa miasto.
+Usuwane jest zarówno miasto jak i wszystkie wychodz¹ce z niego odcinki dróg.
+@param[in] c - wskaŸnik na miasto do usuniêcia
+*/
 void cityDelete(City *c);
 
-//usuwa zmienne tymczasowe z miasta i wszystkich miast do których mo¿na z niego dojœæ drogami
+/** Uwsuwa dane tymczasowe miasta i wszystkich miast, do których da siê z niego dojœæ drogami
+@param[in] c - wskaŸnik na miasto
+*/
 void cityDeleteTemporaryData(City *c);
