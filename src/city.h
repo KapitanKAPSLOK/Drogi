@@ -138,3 +138,7 @@ void cityDelete(City *c);
 @param[in] c - wskaŸnik na miasto
 */
 void cityDeleteTemporaryData(City *c);
+
+///sprawdza czy napis mo¿e byæ poprawn¹ nazw¹ miasta
+/// @return @p true jeœli nazwa jest poprawna lub @p false jeœli nie
+bool cityCheckName(const char* str);

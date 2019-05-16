@@ -4,7 +4,6 @@
 #include<string.h>
 #include <limits.h>
 #include <time.h>
-
 //////////////funkcje wewnêtrzne/////////////////
 
 //liczy hash dla podanego parametru x przy ustalonych parametrach a i b i zwraca wynik modulo size
@@ -34,21 +33,38 @@ CityList *cityHashTableGetCityList(CityHashTable *t) {
 	return l;
 }
 
+//usuwa strukturê, ale nie rekurencyjnie, nie usuwa przechowywanych w niej elementów
+void cityHashTableDelete2(CityHashTable *t) {
+	free(t->tab);
+	free(t);
+}
+
 //gdy liczby elementów hash tablicy jest wiêksza od po³owy jej rozmiaru tworzy now¹ wiêksz¹ tablicê
 void cityHashTableEnlarge(CityHashTable **t) {
 	if ((*t)->numberOfElements > (*t)->size / 2) {
 		//tworzenie nowej wiêkszej tablicy
 		CityList *l = cityHashTableGetCityList(*t);
-		CityHashTable *temp = cityHashTableMake(l, (*t)->numberOfElements + 1);
+		CityHashTable *temp = cityHashTableMake(l, (*t)->numberOfElements);
 		if (temp == NULL) return; //nie uda³o siê powiêkszyæ tablicy
 		//uda³o siê utworzyæ now¹ hash tabicê
-		cityHashTableDelete(*t);
+		cityHashTableDelete2(*t);
 		(*t) = temp;
 		cityListDelete(l);
 	}
 }
 
 /////////////////////////funkcje udostêpniane////////////////////
+
+//sprawdza czy napis mo¿e byæ poprawn¹ nazw¹ miasta
+bool cityCheckName(const char* str) {
+	if (str == NULL) return false;
+	if (str == '\0') return false;
+	for (int i=0;; ++i) {
+		if (str[i] == '\0') return true; //koniec nazwy
+		if ((int)str[i] < 32 && (int)str[i]>0) return false; //nazwa zawiera niepoprawny znak
+		if (str[i] == ';') return false; //œredniki w nazwach s¹ niedozwolone
+	}
+}
 
 //³¹czy dwa miasta drog¹, zwraca true jeœli uda siê dodaæ drogê lub false jeœli nie
 bool cityAddRoad(City *c1, City *c2, unsigned length, int builtYear) {
@@ -81,7 +97,7 @@ City *cityMake(const char *str) {
 	City *c = malloc(sizeof(*c));
 	if (c == NULL) return NULL; //b³¹d alokacji pamiêci
 	c->roads = NULL;
-	c->name = malloc(strlen(str) * sizeof(*c->name));
+	c->name = malloc((strlen(str)+1) * sizeof(char));
 	if (c->name == NULL) return NULL; //b³¹d alokacji pamiêci
 	strcpy(c->name, str);
 	c->roads = NULL;
@@ -91,19 +107,19 @@ City *cityMake(const char *str) {
 
 //usuwa miasto oraz prowadz¹ce do niego drogi
 void cityDelete(City *c){
-	free(c->name);
-	free(c->temporaryData);
 	RoadList *l = c->roads;
-	//usuwanie dróg z list dróg w miastach do których prowadz¹ drogi z miasta c
+	//usuwanie odcinków dróg z list odcinków dróg w miastach do których prowadz¹ odcinki dróg z miasta c
 	while (l != NULL) {
 		City *temp= roadGetCity(l->r, c);
 		roadListDeleteElement(&(temp->roads), l->r);
+		l = l->next;
 	}
 	//usuwanie samych dróg
 	roadListDeleteElements(c->roads);
 	//usuwanie struktury listy pozosta³ej po drogach
 	roadListDelete(c->roads);
-
+	free(c->name);
+	free(c->temporaryData);
 	free(c);
 }
 
@@ -111,10 +127,12 @@ void cityDelete(City *c){
 void cityDeleteTemporaryData(City *c) {
 	if (c->temporaryData == NULL) return;
 	free(c->temporaryData);
+	c->temporaryData = NULL;
 	RoadList *l = c->roads;
 	while (l != NULL) {
 		cityDeleteTemporaryData(l->r->city1);
 		cityDeleteTemporaryData(l->r->city2);
+		l = l->next;
 	}
 }
 
@@ -142,14 +160,17 @@ void cityListDeleteElement(CityList **l, City *r) {
 		CityList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
+		return;
 	}
-	while ((*l)->next != NULL) {
-		if ((*l)->next->c == r) {
-			CityList *temp = (*l)->next;
-			(*l)->next = (*l)->next->next;
+	CityList *list = *l;
+	while (list->next != NULL) {
+		if (list->next->c == r) {
+			CityList *temp = list->next;
+			list->next = list->next->next;
 			free(temp);
 			return;
 		}
+		list = list->next;
 	}
 	return;
 }
@@ -265,7 +286,7 @@ CityHashTable *cityHashTableMake(CityList *cities, int numberOfCities){
 	return table;
 }
 
-//usuwa strukturê
+//usuwa strukturê i jej zawartoœæ
 void cityHashTableDelete(CityHashTable *t) {
 	if (t == NULL) return;
 	for (int i = 0; i < t->size; ++i) {

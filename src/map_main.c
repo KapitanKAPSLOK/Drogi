@@ -6,17 +6,16 @@
 #include <string.h>
 
 #undef NDEBUG
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
 
 
 int main() {
   
   char const* str;
-  
+
   Map* m = newMap();
   assert(m);
-
   assert(addRoad(m, "Alinów", "Bór", 1, 2020));
   assert(addRoad(m, "Bór", "Cielińsk-Niekłańsk", 2, 2020));
   assert(addRoad(m, "Bór", "Dąb Stary", 3, 2020));
@@ -40,6 +39,7 @@ int main() {
   assert(newRoute(m, 10, "Alinów", "Emiliew"));
 
   str = getRouteDescription(m, 10);
+
   assert(strcmp(str, "10;Alinów;1;2020;Bór;2;2020;Cielińsk-Niekłańsk;4;2021;Emiliew") == 0);
   free((void *)str);
 

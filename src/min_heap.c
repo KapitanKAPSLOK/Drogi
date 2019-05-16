@@ -73,16 +73,23 @@ bool minHeapAdd(MinHeap *h, City *c) {
 	if (h->size >= h->maxSize) {
 		if (h->size == INT_MAX) return false; //osi¹gniêto maksymaln¹ iloœæ elementów
 		if (h->maxSize < INT_MAX / 2) {
-			realloc(h->tab, 2 * h->maxSize);
+			City **temp = realloc(h->tab, 2 * h->maxSize * sizeof(*(h->tab)));
+			if (temp == NULL) return false; //brak pamiêci
+			h->tab = temp;
+			h->maxSize *= 2;
 		}
 		else {
-			realloc(h->tab, INT_MAX);
+			City **temp = realloc(h->tab, INT_MAX * sizeof(*(h->tab)));
+			if (temp == NULL) return false; //brak pamiêci
+			h->tab = temp;
+			h->maxSize = INT_MAX;
 		}
 	}
-	if (h->tab == NULL) return false; //nie uda³o siê zaalokowaæ pamiêci
 	c->temporaryData[1] = h->size; //miasto pamiêta swój indeks w tablicy
 	h->tab[h->size++] = c;
+
 	minHeapRepairUp(h,h->size);
+
 	return true;
 }
 
@@ -93,4 +100,15 @@ City* minHeapPeak(MinHeap *h) {
 	h->tab[0] = h->tab[--(h->size)];
 	minHeapRepairDown(h);
 	return temp;
+}
+
+
+//DEBUG, wyœwietl
+void show(MinHeap *h) {
+	for (int i = 0; i < h->size; ++i) {
+		printf("%d ", i);
+		printf(h->tab[i]->name);
+		printf(" ");
+	}
+	printf("\n");
 }

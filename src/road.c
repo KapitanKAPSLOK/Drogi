@@ -42,19 +42,22 @@ void roadListAddList(RoadList **l1, RoadList *l2) {
 
 ///usuwa element r z listy dróg
 void roadListDeleteElement(RoadList **l, Road *r) {
-	if (l == NULL || r == NULL) return;
+	if (l == NULL || r == NULL || (*l)==NULL) return;
 	if ((*l)->r == r) { //element r znajduje siê na pocz¹tku
 		RoadList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
+		return;
 	}
-	while ((*l)->next != NULL) {
-		if ((*l)->next->r == r) {
-			RoadList *temp = (*l)->next;
-			(*l)->next= (*l)->next->next;
+	RoadList *list = *l;
+	while (list->next != NULL) {
+		if (list->next->r == r) {
+			RoadList *temp = list->next;
+			list->next= list->next->next;
 			free(temp);
 			return;
 		}
+		list = list->next;
 	}
 	return;
 }
@@ -117,14 +120,18 @@ City *roadGetCity(Road *r, City *c) {
 
 //sprawdza czy dana droga dochodzi do podanego miasta
 bool roadConnectCity(Road *r, City *c) {
+	if (c == NULL || r == NULL) return false;
 	if (!strcmp(r->city1->name, c->name) || !strcmp(r->city2->name, c->name)) return true;
 	return false;
 }
 
 //zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
 char *roadGetDescription(Road *r, City *c) {
-	char *str = ";";
+	char *str = malloc(sizeof(*str));
+	if (str == NULL) return NULL; //brak pamiêci
+	*str = '\0'; //napis w C koñczy siê zerem
 	//jeœli przy do³¹czaniu napisów zostanie zwrócony NULL znaczy, ¿e zabrak³o pamiêci, wtedy zwracany jest NULL
+	if (!(str = myStringAppendString(str, ";"))) return NULL;
 	if (!(str = myStringAppendInt(str, r->length))) return NULL;
 	if (!(str = myStringAppendString(str, ";"))) return NULL;
 	if (!(str = myStringAppendInt(str, r->modificationDate))) return NULL;

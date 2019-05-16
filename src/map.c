@@ -16,6 +16,7 @@ typedef struct Map {
 Map* newMap(void) {
 	Map *m = malloc(sizeof(*m));
 	if (m == NULL) return NULL;
+	m->routes = NULL;
 	//tworzy now¹ hash tablicê z miejscem dla domyœlnej liczby 16 elementów
 	if(!(m->cities=cityHashTableMake(NULL, 16))){
 		//nie uda³o siê zaalokowaæ tyle pamiêci, próba zaalokowania mniejszej iloœci
@@ -37,7 +38,8 @@ void deleteMap(Map *map) {
 
 //Dodaje do mapy odcinek drogi miêdzy dwoma ró¿nymi miastami.
 bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, int builtYear) {
-	if (city1 == NULL || city2 == NULL) return false; //niepoprawna nazwa miasta
+	if (!cityCheckName(city1) || !cityCheckName(city2)) return false; //niepoprawna nazwa miasta
+
 	if(!strcmp(city1, city2)) return false; //nazwy s¹ identyczne
 	if (builtYear == 0) return false; //z³y rok
 	if (length <= 0) return false; //niepoprawna d³ugoœæ drogi
@@ -62,6 +64,7 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
 	return roadRepair(r, repairYear);
 }
 
+#include <stdio.h>
 //£¹czy dwa ró¿ne miasta drog¹ krajow¹.
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
 	if (map == NULL) return false;
@@ -86,6 +89,7 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 	if (c == NULL) return false; //miasto o podanej nazwie nie istnieje
 	if (roadListContain(r->roads, c)) return false; //droga krajowa przebiega ju¿ przez to miasto
 	CityList *cit = routeMakeCityList(r);
+	cityListDeleteElement(&cit, r->end);
 	RoadList *extendRoads = connectCities(r->end, c, cit, false);
 	if (extendRoads == NULL) return false; //nie uda³o siê przed³u¿yæ drogi
 	roadListAddList(&(r->roads), extendRoads);
@@ -105,6 +109,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	}
 	//wszystkie drogi krajowe zosta³y sprawdzone, mo¿na zacz¹æ je zmieniaæ
 	Road *r = roadListContain(c1->roads, c2);
+	route = map->routes;
 	while (route != NULL) {
 		routeFix(route->r, c1, c2);
 		roadListDeleteElement(&(route->r->roads), r);
@@ -118,22 +123,43 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	return true;
 }
 
+
 //Udostêpnia informacje o drodze krajowej.
 char const* getRouteDescription(Map *map, unsigned routeId) {
 	Route *r = routeListFind(map->routes, routeId);
-	if (r == NULL) return NULL; //nie istnieje droga krajowa o podanym numerze
-	char *str = "";
-	if (!myStringAppendInt(str, routeId)) return NULL; //nie uda³o siê zaalokowaæ pamiêci
+	char *str=malloc(sizeof(str));
+	if (str == NULL) return NULL; //brak pamiêci
+	*str = '\0';
+	if (r == NULL) return str; //nie istnieje droga krajowa o podanym numerze
+	if (!(str=myStringAppendInt(str, routeId))) return NULL; //nie uda³o siê zaalokowaæ pamiêci
 	RoadList *l = r->roads;
 	if (l == NULL) return str;
 	l=roadListReverse(l); //drogi przechowywane s¹ w odwrotnej kolejnoœci
+	RoadList *start = l; //przed wyjœciem z funkcji nale¿y ponownie odwóriæ listê
 	City *c=r->start;
-	if (!myStringAppendString(str, ";")) return NULL;
-	if (!myStringAppendString(str, c->name)) return NULL;
+	if (!(str = myStringAppendString(str, ";"))) {
+		roadListReverse(start);
+		return NULL;
+	}
+	if (!(str = myStringAppendString(str, c->name))) {
+		roadListReverse(start);
+		return NULL;
+	}
+	char *temp;
 	while (l != NULL) {
-		if (!roadGetDescription(l->r, c)) return NULL; //jeœi prawdziwe znaczy zabrak³o pamiêci
+		temp = roadGetDescription(l->r, c);
 		c = roadGetCity(l->r, c);
+		if (temp == NULL) { //zabrak³o pamiêci
+			roadListReverse(start);
+			free(str); //zwalnianie dotychczas zaalokowanej pamiêci
+			return NULL; 
+		}
+		if (!(str = myStringAppendString(str, temp))) {
+			roadListReverse(start);
+			return NULL;
+		}
 		l = l->next;
 	}
+	roadListReverse(start); //trzeba naprawiæ odwrócon¹ listê
 	return str;
 }

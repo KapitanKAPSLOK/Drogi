@@ -6,6 +6,7 @@
 #include <limits.h>
 #include<string.h>
 
+
 int min(int a, int b) {
 	return (a < b) ? a : b;
 }
@@ -19,11 +20,13 @@ void routeListDelete(RouteList *l) {
 	RouteList *p = l->next;
 	RouteList *temp;
 	while (p != NULL) {
+		roadListDelete(p->r->roads);
 		free(p->r);
 		temp = p->next;
 		free(p);
 		p = temp;
 	}
+	roadListDelete(l->r->roads);
 	free(l->r);
 	free(l);
 }
@@ -63,6 +66,7 @@ void routeListDeleteElement(RouteList **l, Route *r) {
 Route *routeListFind(RouteList *l, unsigned nr) {
 	while (l != NULL) {
 		if (l->r->id == nr) return l->r;
+		l = l->next;
 	}
 	return NULL;
 }
@@ -83,7 +87,7 @@ Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end) {
 
 //tworzy listê z miast przez które przechodzi droga krajowa
 CityList *routeMakeCityList(Route *r) {
-	CityList *l;
+	CityList *l=NULL;
 	if (!cityListAdd(&l, r->end)) {
 		//nie uda³o siê dodaæ elementu do listy
 		cityListDelete(l);
@@ -106,21 +110,36 @@ CityList *routeMakeCityList(Route *r) {
 //dodaje do drogi krajowej najkrótsz¹ œcie¿kê ³¹cz¹c¹ c1 i c2, ale nie bezpoœrednio
 void routeFix(Route *r, City *c1, City *c2) {
 	RoadList *l = r->roads;
+	City *crossedRoads = NULL; //trzyma nazwê pierwszego spotkanego miasta c1 lub c2
 	while (l != NULL) {
-		if (!strcmp(l->r->city1->name, c1->name)) {
-			if (!strcmp(l->r->city1->name, c1->name)) {
+		if (roadConnectCity(l->r, c1) || roadConnectCity(l->r, c2)) {
+			if (roadConnectCity(l->r, c1) && roadConnectCity(l->r, c2)) {
 				//odcinek drogi nale¿y do tej drogi krajowej
 				CityList *temp = routeMakeCityList(r);
 				if (temp == NULL) return;
 				cityListDeleteElement(&temp, c2);
-				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze siê uda, bo by³o wczeœniej sprawdzane
+				cityListDeleteElement(&temp, c1);
 				
+				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze siê uda, bo by³o wczeœniej sprawdzane
+
+				if (!roadConnectCity(fix->r,crossedRoads)) {
+					//naprawiono czêœæ drogi w przeciwnym kierunku wzglêdem drogi krajowej, wiêc trzeba odwróciæ
+					fix = roadListReverse(fix);
+				}
 				//pod³¹czanie nowego kawa³ka drogi po odcinku który ma zostaæ usuniêty
 				roadListAddList(&(l->next), fix);
+				return;
 			}
 			//nie mo¿e byæ pêtli, wiêc tylko jeden odcinek drogi z danego miasta mo¿e byæ wykorzystany
-			return;
+			//po pierwszym wyst¹pieniu miasta nastêpny odcinek drogi musi byæ tym który jest szukany lub ju¿ go nie bêdzie
+			if (crossedRoads) return;
+			//ustalanie kierunku drogi krajowej
+			if (roadConnectCity(l->r, c1))
+				crossedRoads = c1;
+			else
+				crossedRoads = c2;
 		}
+		l = l->next;
 	}
 	return;
 }
@@ -128,6 +147,7 @@ void routeFix(Route *r, City *c1, City *c2) {
 //sprawdza czy mo¿na usun¹æ odcinek drogi tak aby mo¿na by³o naprawiæ drogê krajow¹
 bool routeCanChange(Route *r, City *c1, City *c2) {
 	RoadList *l = r->roads;
+	bool crossedRoads = false;
 	while (l != NULL) {
 		if (roadConnectCity(l->r,c1) || roadConnectCity(l->r, c2)) {
 			if (roadConnectCity(l->r,c1) && roadConnectCity(l->r, c2)) {
@@ -135,10 +155,13 @@ bool routeCanChange(Route *r, City *c1, City *c2) {
 				CityList *temp=routeMakeCityList(r);
 				if (temp == NULL) return false;
 				cityListDeleteElement(&temp, c2);
-				return !connectCities(c1, c2, temp, true);
+				cityListDeleteElement(&temp, c1);
+				return connectCities(c1, c2, temp, true);
 			}
 			//nie mo¿e byæ pêtli, wiêc tylko jeden odcinek drogi z danego miasta mo¿e byæ wykorzystany
-			return true;
+			//po pierwszym wyst¹pieniu miasta nastêpny odcinek drogi musi byæ tym który jest szukany lub ju¿ go nie bêdzie
+			if(crossedRoads) return true;
+			crossedRoads = true;
 		}
 		l = l->next;
 	}
@@ -158,7 +181,7 @@ RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 	RoadList *minimalRoute = NULL;
 	while (list != NULL) {
 		City *c = roadGetCity(list->r, end);
-		if (end->temporaryData[0] == c->temporaryData[0] + (int)(list->r->length)) {
+		if (c->temporaryData!=NULL && end->temporaryData[0] == c->temporaryData[0] + (int)(list->r->length)) {
 			RoadList *route = getMinimalRoute(start, c, age, ambigunity);
 			*age = min(*age, list->r->modificationDate);
 			if (*age > maxAge) {
@@ -204,6 +227,7 @@ bool prepareCities(City *start, City *end, City *c, CityList *cities, bool notDi
 				return false; //nie uda³o siê zaalokowaæ pamiêci
 			}
 		}
+		l = l->next;
 	}
 	return true;
 }
