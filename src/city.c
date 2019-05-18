@@ -58,7 +58,7 @@ void cityHashTableEnlarge(CityHashTable **t) {
 //sprawdza czy napis może być poprawną nazwą miasta
 bool cityCheckName(const char* str) {
 	if (str == NULL) return false;
-	if (str == '\0') return false;
+	if (*str == '\0') return false;
 	for (int i=0;; ++i) {
 		if (str[i] == '\0') return true; //koniec nazwy
 		if ((int)str[i] < 32 && (int)str[i]>0) return false; //nazwa zawiera niepoprawny znak
