@@ -14,7 +14,7 @@ int min(int a, int b) {
 
 //////////////////////routeList/////////////////////////
 
-//usuwa listÍ drÛg krajowych
+//usuwa listƒô dr√≥g krajowych
 void routeListDelete(RouteList *l) {
 	if (l == NULL)return;
 	RouteList *p = l->next;
@@ -31,7 +31,7 @@ void routeListDelete(RouteList *l) {
 	free(l);
 }
 
-//dodaje element na poczπtek listy drÛg krajowych
+//dodaje element na poczƒÖtek listy dr√≥g krajowych
 bool routeListAdd(RouteList **l, Route *r) {
 	RouteList *temp;
 	temp = malloc(sizeof(*temp));
@@ -43,10 +43,10 @@ bool routeListAdd(RouteList **l, Route *r) {
 	return true;
 }
 
-///usuwa element r z listy drÛg krajowych
+///usuwa element r z listy dr√≥g krajowych
 void routeListDeleteElement(RouteList **l, Route *r) {
 	if (l == NULL || r == NULL) return;
-	if ((*l)->r == r) { //element r znajduje siÍ na poczπtku
+	if ((*l)->r == r) { //element r znajduje siƒô na poczƒÖtku
 		RouteList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
@@ -62,7 +62,7 @@ void routeListDeleteElement(RouteList **l, Route *r) {
 	return;
 }
 
-//zwraca drogÍ krajowπ o podanym numerze lub NULL jeúli nie ma takiej na liúcie
+//zwraca drogƒô krajowƒÖ o podanym numerze lub NULL je≈õli nie ma takiej na li≈õcie
 Route *routeListFind(RouteList *l, unsigned nr) {
 	while (l != NULL) {
 		if (l->r->id == nr) return l->r;
@@ -74,7 +74,7 @@ Route *routeListFind(RouteList *l, unsigned nr) {
 
 /////////////////////////inne//////////////////////////////
 
-//tworzy nowπ drogÍ krajowπ, jeúli nie uda siÍ jej utworzyÊ zwraca NULL
+//tworzy nowƒÖ drogƒô krajowƒÖ, je≈õli nie uda siƒô jej utworzyƒá zwraca NULL
 Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end) {
 	Route *r = malloc(sizeof(*r));
 	if (r == NULL) return NULL;
@@ -85,11 +85,11 @@ Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end) {
 	return r;
 }
 
-//tworzy listÍ z miast przez ktÛre przechodzi droga krajowa
+//tworzy listƒô z miast przez kt√≥re przechodzi droga krajowa
 CityList *routeMakeCityList(Route *r) {
 	CityList *l=NULL;
 	if (!cityListAdd(&l, r->end)) {
-		//nie uda≥o siÍ dodaÊ elementu do listy
+		//nie uda≈Ço siƒô dodaƒá elementu do listy
 		cityListDelete(l);
 		return NULL;
 	}
@@ -97,7 +97,7 @@ CityList *routeMakeCityList(Route *r) {
 	City *c = r->end;
 	while (road != NULL) {
 		if (!cityListAdd(&l, roadGetCity(road->r, c))) {
-			//nie uda≥o siÍ dodaÊ elementu do listy
+			//nie uda≈Ço siƒô dodaƒá elementu do listy
 			cityListDelete(l);
 			return NULL;
 		}
@@ -107,31 +107,31 @@ CityList *routeMakeCityList(Route *r) {
 	return l;
 }
 
-//dodaje do drogi krajowej najkrÛtszπ úcieøkÍ ≥πczπcπ c1 i c2, ale nie bezpoúrednio
+//dodaje do drogi krajowej najkr√≥tszƒÖ ≈õcie≈ºkƒô ≈ÇƒÖczƒÖcƒÖ c1 i c2, ale nie bezpo≈õrednio
 void routeFix(Route *r, City *c1, City *c2) {
 	RoadList *l = r->roads;
-	City *crossedRoads = NULL; //trzyma nazwÍ pierwszego spotkanego miasta c1 lub c2
+	City *crossedRoads = NULL; //trzyma nazwƒô pierwszego spotkanego miasta c1 lub c2
 	while (l != NULL) {
 		if (roadConnectCity(l->r, c1) || roadConnectCity(l->r, c2)) {
 			if (roadConnectCity(l->r, c1) && roadConnectCity(l->r, c2)) {
-				//odcinek drogi naleøy do tej drogi krajowej
+				//odcinek drogi nale≈ºy do tej drogi krajowej
 				CityList *temp = routeMakeCityList(r);
 				if (temp == NULL) return;
 				cityListDeleteElement(&temp, c2);
 				cityListDeleteElement(&temp, c1);
 				
-				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze siÍ uda, bo by≥o wczeúniej sprawdzane
+				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze siƒô uda, bo by≈Ço wcze≈õniej sprawdzane
 
 				if (!roadConnectCity(fix->r,crossedRoads)) {
-					//naprawiono czÍúÊ drogi w przeciwnym kierunku wzglÍdem drogi krajowej, wiÍc trzeba odwrÛciÊ
+					//naprawiono czƒô≈õƒá drogi w przeciwnym kierunku wzglƒôdem drogi krajowej, wiƒôc trzeba odwr√≥ciƒá
 					fix = roadListReverse(fix);
 				}
-				//pod≥πczanie nowego kawa≥ka drogi po odcinku ktÛry ma zostaÊ usuniÍty
+				//pod≈ÇƒÖczanie nowego kawa≈Çka drogi po odcinku kt√≥ry ma zostaƒá usuniƒôty
 				roadListAddList(&(l->next), fix);
 				return;
 			}
-			//nie moøe byÊ pÍtli, wiÍc tylko jeden odcinek drogi z danego miasta moøe byÊ wykorzystany
-			//po pierwszym wystπpieniu miasta nastÍpny odcinek drogi musi byÊ tym ktÛry jest szukany lub juø go nie bÍdzie
+			//nie mo≈ºe byƒá pƒôtli, wiƒôc tylko jeden odcinek drogi z danego miasta mo≈ºe byƒá wykorzystany
+			//po pierwszym wystƒÖpieniu miasta nastƒôpny odcinek drogi musi byƒá tym kt√≥ry jest szukany lub ju≈º go nie bƒôdzie
 			if (crossedRoads) return;
 			//ustalanie kierunku drogi krajowej
 			if (roadConnectCity(l->r, c1))
@@ -144,22 +144,22 @@ void routeFix(Route *r, City *c1, City *c2) {
 	return;
 }
 
-//sprawdza czy moøna usunπÊ odcinek drogi tak aby moøna by≥o naprawiÊ drogÍ krajowπ
+//sprawdza czy mo≈ºna usunƒÖƒá odcinek drogi tak aby mo≈ºna by≈Ço naprawiƒá drogƒô krajowƒÖ
 bool routeCanChange(Route *r, City *c1, City *c2) {
 	RoadList *l = r->roads;
 	bool crossedRoads = false;
 	while (l != NULL) {
 		if (roadConnectCity(l->r,c1) || roadConnectCity(l->r, c2)) {
 			if (roadConnectCity(l->r,c1) && roadConnectCity(l->r, c2)) {
-				//odcinek drogi naleøy do tej drogi krajowej
+				//odcinek drogi nale≈ºy do tej drogi krajowej
 				CityList *temp=routeMakeCityList(r);
 				if (temp == NULL) return false;
 				cityListDeleteElement(&temp, c2);
 				cityListDeleteElement(&temp, c1);
 				return connectCities(c1, c2, temp, true);
 			}
-			//nie moøe byÊ pÍtli, wiÍc tylko jeden odcinek drogi z danego miasta moøe byÊ wykorzystany
-			//po pierwszym wystπpieniu miasta nastÍpny odcinek drogi musi byÊ tym ktÛry jest szukany lub juø go nie bÍdzie
+			//nie mo≈ºe byƒá pƒôtli, wiƒôc tylko jeden odcinek drogi z danego miasta mo≈ºe byƒá wykorzystany
+			//po pierwszym wystƒÖpieniu miasta nastƒôpny odcinek drogi musi byƒá tym kt√≥ry jest szukany lub ju≈º go nie bƒôdzie
 			if(crossedRoads) return true;
 			crossedRoads = true;
 		}
@@ -168,14 +168,14 @@ bool routeCanChange(Route *r, City *c1, City *c2) {
 	return true;
 }
 
-//zwraca najkrÛtszπ drogÍ pomiÍdzy miastami start i end
+//zwraca najkr√≥tszƒÖ drogƒô pomiƒôdzy miastami start i end
 RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 	if (end == start) {
 		*age = INT_MAX;
 		*ambigunity = false;
 		return NULL;
 	}
-	int maxAge = INT_MIN; //data ostatniej modyfikacji najstarszego odcinka drogi w ciπgu drÛg minimalRoute
+	int maxAge = INT_MIN; //data ostatniej modyfikacji najstarszego odcinka drogi w ciƒÖgu dr√≥g minimalRoute
 	bool ambiguityLocal = false;
 	RoadList *list = end->roads;
 	RoadList *minimalRoute = NULL;
@@ -186,7 +186,7 @@ RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 			*age = min(*age, list->r->modificationDate);
 			if (*age > maxAge) {
 				ambiguityLocal = *ambigunity;
-				if (!roadListAdd(&route, list->r)) { //za ma≥o pamiÍci
+				if (!roadListAdd(&route, list->r)) { //za ma≈Ço pamiƒôci
 					roadListDelete(route);
 					return NULL; 
 				}
@@ -207,24 +207,24 @@ RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 	return minimalRoute;
 }
 
-//alokuje rekurencyjnie pamiÍÊ pod zmiennπ temporaryData potrzebnπ podczas wyszukiwania úcieøki miÍdzy mistami
-//prowadzi drogÍ tylko przez miasta nie naleøπce do listy cities
+//alokuje rekurencyjnie pamiƒôƒá pod zmiennƒÖ temporaryData potrzebnƒÖ podczas wyszukiwania ≈õcie≈ºki miƒôdzy mistami
+//prowadzi drogƒô tylko przez miasta nie nale≈ºƒÖce do listy cities
 bool prepareCities(City *start, City *end, City *c, CityList *cities, bool notDirectly) {
-	if (cityListFind(cities, c)) return true; //droga krajowa nie moøe mieÊ samoprzeciÍÊ
-	if (c->temporaryData != NULL) return true; //to miasto juø sota≥o przygotowane
+	if (cityListFind(cities, c)) return true; //droga krajowa nie mo≈ºe mieƒá samoprzeciƒôƒá
+	if (c->temporaryData != NULL) return true; //to miasto ju≈º sota≈Ço przygotowane
 
-	//miasto nie by≥o jeszcze odwiedzone, alokacja dwÛch pÛl na dane i inicjalizacja ich
+	//miasto nie by≈Ço jeszcze odwiedzone, alokacja dw√≥ch p√≥l na dane i inicjalizacja ich
 	c->temporaryData = malloc(2 * sizeof(*(c->temporaryData)));
-	if (c->temporaryData == NULL) return false; //nie uda≥o siÍ zaalokowaÊ pamiÍci
-	c->temporaryData[0] = INT_MAX; //na tym polu bÍdzie odleg≥oúÊ od miasta poczπtkowego
-	c->temporaryData[1] = -1; //na tym polu bÍdzie indeks w tablicy w strukturze kopca
-	//alokowanie pamiÍci rekurencyjnie
+	if (c->temporaryData == NULL) return false; //nie uda≈Ço siƒô zaalokowaƒá pamiƒôci
+	c->temporaryData[0] = INT_MAX; //na tym polu bƒôdzie odleg≈Ço≈õƒá od miasta poczƒÖtkowego
+	c->temporaryData[1] = -1; //na tym polu bƒôdzie indeks w tablicy w strukturze kopca
+	//alokowanie pamiƒôci rekurencyjnie
 	RoadList *l = c->roads;
 	while (l != NULL) {
 		City *temp = roadGetCity(l->r,c);
-		if (!(notDirectly && (c == start && temp == end))) { //sprawdza czy jest to bezpoúrednie po≥πczenie miÍdzy c1 i c2
+		if (!(notDirectly && (c == start && temp == end))) { //sprawdza czy jest to bezpo≈õrednie po≈ÇƒÖczenie miƒôdzy c1 i c2
 			if (!prepareCities(start, end, temp, cities, notDirectly)) {
-				return false; //nie uda≥o siÍ zaalokowaÊ pamiÍci
+				return false; //nie uda≈Ço siƒô zaalokowaƒá pamiƒôci
 			}
 		}
 		l = l->next;
@@ -232,23 +232,23 @@ bool prepareCities(City *start, City *end, City *c, CityList *cities, bool notDi
 	return true;
 }
 
-//zwraca najkrÛtszy ciπg drÛg miÍdzy miastami, jeúli nie istnieje lub w przypadku b≥Ídu zwraca NULL
-//prowadzi drogÍ tylko przez miasta nie naleøπce do listy cities
+//zwraca najkr√≥tszy ciƒÖg dr√≥g miƒôdzy miastami, je≈õli nie istnieje lub w przypadku b≈Çƒôdu zwraca NULL
+//prowadzi drogƒô tylko przez miasta nie nale≈ºƒÖce do listy cities
 RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirectly) {
-	if (start == NULL || end == NULL) return NULL; //ktÛreú z miast nie istnieje
+	if (start == NULL || end == NULL) return NULL; //kt√≥re≈õ z miast nie istnieje
 	MinHeap *h = minHeapCreate();
-	if (h == NULL) return NULL; //nie uda≥o siÍ zalokowaÊ pamiÍci na kopiec
+	if (h == NULL) return NULL; //nie uda≈Ço siƒô zalokowaƒá pamiƒôci na kopiec
 	if (!prepareCities(start, end, start, cities, notDirectly)) {
-		//nie uda≥o siÍ przygotowaÊ pamiÍci potrzebnej do dzia≥ania algorytmu
-		cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiÍci przed wystπpieniem b≥Ídu
+		//nie uda≈Ço siƒô przygotowaƒá pamiƒôci potrzebnej do dzia≈Çania algorytmu
+		cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiƒôci przed wystƒÖpieniem b≈Çƒôdu
 		return NULL;
 	}
 	if (end->temporaryData == NULL) {
-		//nie ma po≥πczenia miÍdzy podanymi miastami
-		cityDeleteTemporaryData(start); //zwalnianie zaalokowanej pamiÍci
+		//nie ma po≈ÇƒÖczenia miƒôdzy podanymi miastami
+		cityDeleteTemporaryData(start); //zwalnianie zaalokowanej pamiƒôci
 		return NULL;
 	}
-	//argumenty funkcji sπ poprawne i zosta≥o zaalokowana pamiÍÊ i ustawione zmienne pomocnicze
+	//argumenty funkcji sƒÖ poprawne i zosta≈Ço zaalokowana pamiƒôƒá i ustawione zmienne pomocnicze
 	start->temporaryData[0] = 0;
 	minHeapAdd(h, start);
 	City *act;
@@ -256,18 +256,18 @@ RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirect
 		RoadList *road = act->roads;
 		while (road != NULL) {
 			City *temp = roadGetCity(road->r, act);
-			if (!(notDirectly && (act==start && temp==end))) { //sprawdza czy jest to bezpoúrednie po≥πczenie miÍdzy c1 i c2
-				if (!cityListFind(cities, temp)) { //droga krajowa nie moøe mieÊ samoprzeciÍÊ
+			if (!(notDirectly && (act==start && temp==end))) { //sprawdza czy jest to bezpo≈õrednie po≈ÇƒÖczenie miƒôdzy c1 i c2
+				if (!cityListFind(cities, temp)) { //droga krajowa nie mo≈ºe mieƒá samoprzeciƒôƒá
 					if ((int)(road->r->length) + act->temporaryData[0] < temp->temporaryData[0]) {
-						//znaleziono krÛtszπ úcieøkÍ do miasta temp
+						//znaleziono kr√≥tszƒÖ ≈õcie≈ºkƒô do miasta temp
 						temp->temporaryData[0] = road->r->length + act->temporaryData[0];
 						if (temp->temporaryData[1] > 0) {
-							//miasto zosta≥o juø dodane do kopca 
-							//odleg≥oúÊ od miasta poczπtkowego zmniejszy≥a siÍ, wiÍc miasto byÊ moøe powinno byÊ wyøej w kopcu
+							//miasto zosta≈Ço ju≈º dodane do kopca 
+							//odleg≈Ço≈õƒá od miasta poczƒÖtkowego zmniejszy≈Ça siƒô, wiƒôc miasto byƒá mo≈ºe powinno byƒá wy≈ºej w kopcu
 							minHeapRepairUp(h, temp->temporaryData[1] + 1);
 						}
 						else {
-							//domyúlna wartoúÊ -1 nie zosta≥a zmieniona, a wiÍc miasta nie by≥o jeszcze w kopcu
+							//domy≈õlna warto≈õƒá -1 nie zosta≈Ça zmieniona, a wiƒôc miasta nie by≈Ço jeszcze w kopcu
 							minHeapAdd(h, temp);
 						}
 					}
@@ -276,17 +276,17 @@ RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirect
 			road = road->next;
 		}
 	}
-	//we wszystkich miastach po≥πczonych z miastem poczπtkowym zosta≥a ustawiona minimalna odleg≥oúÊ od niego
+	//we wszystkich miastach po≈ÇƒÖczonych z miastem poczƒÖtkowym zosta≈Ça ustawiona minimalna odleg≈Ço≈õƒá od niego
 	if (end->temporaryData[1] == -1) {
-		//miasto nie by≥o odwiedzone z czego wynika,
-		//øe notDirectly jest true i jedyna úcieøka do miasta docelowego prowadzi≥a bezpoúrednio z c1 o c2
+		//miasto nie by≈Ço odwiedzone z czego wynika,
+		//≈ºe notDirectly jest true i jedyna ≈õcie≈ºka do miasta docelowego prowadzi≈Ça bezpo≈õrednio z c1 o c2
 		cityDeleteTemporaryData(start);
 		return NULL;
 	}
 	int age;
-	bool ambiguity; //przechowuje informacje czy wyznaczanie najkrÛtszej trasy by≥o jednoznaczne
+	bool ambiguity; //przechowuje informacje czy wyznaczanie najkr√≥tszej trasy by≈Ço jednoznaczne
 	RoadList *l = getMinimalRoute(start, end, &age, &ambiguity);
-	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiÍci tymczasowej
-	if (ambiguity) return NULL; //nie uda≥o siÍ jednoznacznie wyznaczyÊ minimalnej úcieøki
+	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamiƒôci tymczasowej
+	if (ambiguity) return NULL; //nie uda≈Ço siƒô jednoznacznie wyznaczyƒá minimalnej ≈õcie≈ºki
 	return l;
 }

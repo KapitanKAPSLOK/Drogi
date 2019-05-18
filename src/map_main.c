@@ -50,10 +50,11 @@ int main() {
                      ";3;2023;Fraźnik Nowy;4;2020;Grzegrzewo;5;2020;Homilcin") == 0);
   free((void *)str);
   
-  deleteMap(m);
+  //deleteMap(m);
  
 
-  Map* map = newMap();
+  //Map* map = newMap();
+  Map* map = m;
 
   while (ioSkipToCommand()) {
 	  if (ioIsCommand("addRoad"))

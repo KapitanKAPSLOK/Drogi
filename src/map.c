@@ -6,49 +6,49 @@
 
 #include <string.h>
 
-///Struktura przechowuj¹ca mapê dróg krajowych.
+///Struktura przechowujÄ…ca mapÄ™ drÃ³g krajowych.
 typedef struct Map {
 	RouteList *routes;
 	CityHashTable *cities;
 }Map;
 
-//Tworzy now¹ strukturê.
+//Tworzy nowÄ… strukturÄ™.
 Map* newMap(void) {
 	Map *m = malloc(sizeof(*m));
 	if (m == NULL) return NULL;
 	m->routes = NULL;
-	//tworzy now¹ hash tablicê z miejscem dla domyœlnej liczby 16 elementów
+	//tworzy nowÄ… hash tablicÄ™ z miejscem dla domyÅ›lnej liczby 16 elementÃ³w
 	if(!(m->cities=cityHashTableMake(NULL, 16))){
-		//nie uda³o siê zaalokowaæ tyle pamiêci, próba zaalokowania mniejszej iloœci
+		//nie udaÅ‚o siÄ™ zaalokowaÄ‡ tyle pamiÄ™ci, prÃ³ba zaalokowania mniejszej iloÅ›ci
 		if (!(m->cities = cityHashTableMake(NULL, 3))) {
 			free(m);
 			return NULL;
 		}
 	}
-	//uda³o siê zainicjowaæ wszystkie struktury mapy
+	//udaÅ‚o siÄ™ zainicjowaÄ‡ wszystkie struktury mapy
 	return m;
 }
 
-//Usuwa strukturê.
+//Usuwa strukturÄ™.
 void deleteMap(Map *map) {
 	routeListDelete(map->routes);
 	cityHashTableDelete(map->cities);
 	free(map);
 }
 
-//Dodaje do mapy odcinek drogi miêdzy dwoma ró¿nymi miastami.
+//Dodaje do mapy odcinek drogi miÄ™dzy dwoma rÃ³Å¼nymi miastami.
 bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, int builtYear) {
 	if (!cityCheckName(city1) || !cityCheckName(city2)) return false; //niepoprawna nazwa miasta
 
-	if(!strcmp(city1, city2)) return false; //nazwy s¹ identyczne
-	if (builtYear == 0) return false; //z³y rok
-	if (length <= 0) return false; //niepoprawna d³ugoœæ drogi
+	if(!strcmp(city1, city2)) return false; //nazwy sÄ… identyczne
+	if (builtYear == 0) return false; //zÅ‚y rok
+	if (length <= 0) return false; //niepoprawna dÅ‚ugoÅ›Ä‡ drogi
 	City *c1 = cityHashTableAdd(&(map->cities), city1);
-	if (c1 == NULL) return false; //nie uda³o siê dodaæ miasta city1
+	if (c1 == NULL) return false; //nie udaÅ‚o siÄ™ dodaÄ‡ miasta city1
 	City *c2 = cityHashTableAdd(&(map->cities), city2);
-	if (c2 == NULL) return false; //nie uda³o siê dodaæ miasta city2
+	if (c2 == NULL) return false; //nie udaÅ‚o siÄ™ dodaÄ‡ miasta city2
 
-	//TODO:usuwanie pierwszego miasta jak nie uda siê dodaæ drugiego
+	//TODO:usuwanie pierwszego miasta jak nie uda siÄ™ dodaÄ‡ drugiego
 
 	if (!cityAddRoad(c1, c2, length, builtYear)) return false;
 	return true;
@@ -56,7 +56,7 @@ bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, in
 
 //Modyfikuje rok ostatniego remontu odcinka drogi.
 bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) {
-	if (!strcmp(city1, city2)) return false; //miasta s¹ identyczne, nie mo¿e byæ miêdzy nimi drogi
+	if (!strcmp(city1, city2)) return false; //miasta sÄ… identyczne, nie moÅ¼e byÄ‡ miÄ™dzy nimi drogi
 	City *c = cityHashTableFind(map->cities, city1);
 	if (c == NULL) return false; //nie ma takiego miasta
 	Road *r=roadListFindStr(c->roads, city2);
@@ -64,49 +64,49 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
 	return roadRepair(r, repairYear);
 }
 
-//£¹czy dwa ró¿ne miasta drog¹ krajow¹.
+//ÅÄ…czy dwa rÃ³Å¼ne miasta drogÄ… krajowÄ….
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
 	if (map == NULL) return false;
-	if (!strcmp(city1, city2)) return false; //nazwy miast s¹ takie same
+	if (!strcmp(city1, city2)) return false; //nazwy miast sÄ… takie same
 	if (routeId < 1 || routeId>999) return false; //niepoprawny identyfikator drogi krajowej
-	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze ju¿ istnieje
+	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze juÅ¼ istnieje
 	City *c1 = cityHashTableFind(map->cities, city1);
 	City *c2 = cityHashTableFind(map->cities, city2);
 	RoadList *r = connectCities(c1, c2, NULL, false);
-	if (r == NULL) return false; //nie uda³o siê wyznaczyæ jednoznacznie najkrótszej drogi miêdzy miastami
+	if (r == NULL) return false; //nie udaÅ‚o siÄ™ wyznaczyÄ‡ jednoznacznie najkrÃ³tszej drogi miÄ™dzy miastami
 	Route *route = routeMake(routeId, r, c1, c2);
-	if (route == NULL) return false; //nie uda³o siê utworzyæ drogi krajowej
+	if (route == NULL) return false; //nie udaÅ‚o siÄ™ utworzyÄ‡ drogi krajowej
 	if(routeListAdd(&(map->routes), route)) return true;
 	return false;
 }
 
-//Wyd³u¿a drogê krajow¹ do podanego miasta.
+//WydÅ‚uÅ¼a drogÄ™ krajowÄ… do podanego miasta.
 bool extendRoute(Map *map, unsigned routeId, const char *city) {
 	Route *r = routeListFind(map->routes,routeId);
 	if (r == NULL) return false; //nie ma drogi krajowej o podanym numerze
 	City *c = cityHashTableFind(map->cities, city);
 	if (c == NULL) return false; //miasto o podanej nazwie nie istnieje
-	if (roadListContain(r->roads, c)) return false; //droga krajowa przebiega ju¿ przez to miasto
+	if (roadListContain(r->roads, c)) return false; //droga krajowa przebiega juÅ¼ przez to miasto
 	CityList *cit = routeMakeCityList(r);
 	cityListDeleteElement(&cit, r->end);
 	RoadList *extendRoads = connectCities(r->end, c, cit, false);
-	if (extendRoads == NULL) return false; //nie uda³o siê przed³u¿yæ drogi
+	if (extendRoads == NULL) return false; //nie udaÅ‚o siÄ™ przedÅ‚uÅ¼yÄ‡ drogi
 	roadListAddList(&(r->roads), extendRoads);
 	r->end = c;
 	return true;
 }
 
-//Usuwa odcinek drogi miêdzy dwoma ró¿nymi miastami.
+//Usuwa odcinek drogi miÄ™dzy dwoma rÃ³Å¼nymi miastami.
 bool removeRoad(Map *map, const char *city1, const char *city2) {
 	City *c1 = cityHashTableFind(map->cities, city1);
 	City *c2 = cityHashTableFind(map->cities, city2);
-	if (c1 == NULL || c2 == NULL) return false; //któreœ z podanych miast nie istnieje
+	if (c1 == NULL || c2 == NULL) return false; //ktÃ³reÅ› z podanych miast nie istnieje
 	RouteList *route = map->routes;
 	while (route != NULL) {
 		if (!routeCanChange(route->r, c1, c2)) return false;
 		route = route->next;
 	}
-	//wszystkie drogi krajowe zosta³y sprawdzone, mo¿na zacz¹æ je zmieniaæ
+	//wszystkie drogi krajowe zostaÅ‚y sprawdzone, moÅ¼na zaczÄ…Ä‡ je zmieniaÄ‡
 	Road *r = roadListContain(c1->roads, c2);
 	route = map->routes;
 	while (route != NULL) {
@@ -114,7 +114,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 		roadListDeleteElement(&(route->r->roads), r);
 		route = route->next;
 	}
-	//drogi krajowe maj¹ zmienione trasy, mo¿na bezpiecznie usun¹æ odcinek drogi
+	//drogi krajowe majÄ… zmienione trasy, moÅ¼na bezpiecznie usunÄ…Ä‡ odcinek drogi
 	roadListDeleteElement(&(c1->roads), r);
 	roadListDeleteElement(&(c2->roads), r);
 	free(r);
@@ -122,18 +122,18 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	return true;
 }
 
-//Udostêpnia informacje o drodze krajowej.
+//UdostÄ™pnia informacje o drodze krajowej.
 char const* getRouteDescription(Map *map, unsigned routeId) {
 	Route *r = routeListFind(map->routes, routeId);
 	char *str=malloc(sizeof(str));
-	if (str == NULL) return NULL; //brak pamiêci
+	if (str == NULL) return NULL; //brak pamiÄ™ci
 	*str = '\0';
 	if (r == NULL) return str; //nie istnieje droga krajowa o podanym numerze
-	if (!(str=myStringAppendInt(str, routeId))) return NULL; //nie uda³o siê zaalokowaæ pamiêci
+	if (!(str=myStringAppendInt(str, routeId))) return NULL; //nie udaÅ‚o siÄ™ zaalokowaÄ‡ pamiÄ™ci
 	RoadList *l = r->roads;
 	if (l == NULL) return str;
-	l=roadListReverse(l); //drogi przechowywane s¹ w odwrotnej kolejnoœci
-	RoadList *start = l; //przed wyjœciem z funkcji nale¿y ponownie odwóriæ listê
+	l=roadListReverse(l); //drogi przechowywane sÄ… w odwrotnej kolejnoÅ›ci
+	RoadList *start = l; //przed wyjÅ›ciem z funkcji naleÅ¼y ponownie odwÃ³riÄ‡ listÄ™
 	City *c=r->start;
 	if (!(str = myStringAppendString(str, ";"))) {
 		roadListReverse(start);
@@ -147,9 +147,9 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
 	while (l != NULL) {
 		temp = roadGetDescription(l->r, c);
 		c = roadGetCity(l->r, c);
-		if (temp == NULL) { //zabrak³o pamiêci
+		if (temp == NULL) { //zabrakÅ‚o pamiÄ™ci
 			roadListReverse(start);
-			free(str); //zwalnianie dotychczas zaalokowanej pamiêci
+			free(str); //zwalnianie dotychczas zaalokowanej pamiÄ™ci
 			return NULL; 
 		}
 		if (!(str = myStringAppendString(str, temp))) {
@@ -158,38 +158,38 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
 		}
 		l = l->next;
 	}
-	roadListReverse(start); //trzeba naprawiæ odwrócon¹ listê
+	roadListReverse(start); //trzeba naprawiÄ‡ odwrÃ³conÄ… listÄ™
 	return str;
 }
 
-//dodaje odcinek drogi do istniej¹cej drogi krajowej
+//dodaje odcinek drogi do istniejÄ…cej drogi krajowej
 bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, int year) {
 	if (map == NULL || city == NULL) return false;
 	Route *r = routeListFind(map->routes, routeId);
 	if (r == NULL) return false;
 	Road *road = roadListFindStr(r->end->roads, city);
 	if (road == NULL) {
-		//nie ma odcinka drogi do miasta o podanej nazwie, trzeba go stworzyæ
+		//nie ma odcinka drogi do miasta o podanej nazwie, trzeba go stworzyÄ‡
 		if (!addRoad(map, r->end->name, city, length, year)) return false;
 		road = roadListFindStr(r->end->roads, city);
 	}
 	else {
-		if (road->length != length) return false; //d³ugoœæ odcinka drogi siê nie zgadza
-		if (!roadRepair(road, year)) return false; //z³a data remontu
+		if (road->length != length) return false; //dÅ‚ugoÅ›Ä‡ odcinka drogi siÄ™ nie zgadza
+		if (!roadRepair(road, year)) return false; //zÅ‚a data remontu
 	}
 
-	if (!roadListAdd(&(r->roads), road)) return false; //nie uda³o siê dodaæ odcinka drogi do drogi krajowej
+	if (!roadListAdd(&(r->roads), road)) return false; //nie udaÅ‚o siÄ™ dodaÄ‡ odcinka drogi do drogi krajowej
 	r->end = roadGetCity(road, r->end);
 	return true;
 }
 
-//tworzy now¹ drogê krajow¹ miêdzy podanymi miastami ³¹cz¹c je bezpoœrenio odcinkiem drogi
+//tworzy nowÄ… drogÄ™ krajowÄ… miÄ™dzy podanymi miastami Å‚Ä…czÄ…c je bezpoÅ›renio odcinkiem drogi
 bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year) {
-	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze ju¿ istnieje
+	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze juÅ¼ istnieje
 	addRoad(map, city1, city2, length, year);//TODO
 	if (!repairRoad(map, city1, city2, year)) return false;
 	City *c = cityHashTableFind(map->cities, city1);
-	if (c == NULL) return false; //miasto powinno byæ dodane w addRoad, ale mog³o zabrakn¹æ pamiêci
+	if (c == NULL) return false; //miasto powinno byÄ‡ dodane w addRoad, ale mogÅ‚o zabraknÄ…Ä‡ pamiÄ™ci
 	Road *road = roadListFindStr(c->roads, city2);
 	if (road == NULL) return false;
 	RoadList *l=NULL;
@@ -198,6 +198,6 @@ bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2,
 	if (route == NULL) {
 		return false;
 	}
-	if (!routeListAdd(&(map->routes), route)) return false; //nie uda³o siê dodaæ drogi krajowej do mapy
+	if (!routeListAdd(&(map->routes), route)) return false; //nie udaÅ‚o siÄ™ dodaÄ‡ drogi krajowej do mapy
 	return true;
 }

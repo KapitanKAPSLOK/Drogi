@@ -1,6 +1,6 @@
 /** @file
  * Interfejs struktury kopca minimalnego.
- * W kopcu przechowywane s¹ wskaŸniki na miasta. Miasta porównywane s¹ wzglêdem wartoœci 
+ * W kopcu przechowywane sÄ… wskaÅºniki na miasta. Miasta porÃ³wnywane sÄ… wzglÄ™dem wartoÅ›ci 
  * przechowywanych pod zerowym indeksem w @p temporaryData (miasto->temporaryData[0]).
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
@@ -14,37 +14,37 @@
 
 ///struktura kopca minimalnego
 typedef struct MinHeap {
-	int size; ///< aktualna iloœæ elementów na kopcu
+	int size; ///< aktualna iloÅ›Ä‡ elementÃ³w na kopcu
 	int maxSize; ///< rozmiar zaalokowanej tablicy
-	City **tab; ///< tablica przechowuj¹ca elementy kopca
+	City **tab; ///< tablica przechowujÄ…ca elementy kopca
 }MinHeap;
 
 /** Tworzy nowy pusty kopiec.
-* Domyœlny rozmiar tablicy na kopiec wynosi 10 (lub 1 w przypadku ograniczonej pamiêci).
-* @return wskaŸnik na nowy kopiec
+* DomyÅ›lny rozmiar tablicy na kopiec wynosi 10 (lub 1 w przypadku ograniczonej pamiÄ™ci).
+* @return wskaÅºnik na nowy kopiec
 */
 MinHeap* minHeapCreate(void);
 
-/** Naprawia strukturê kopca przenosz¹c element do góry.
-* Porównuje element o numerze @p indeks z jego rodzicem i zamienia te 2 elementy miejscami
-* jeœli element jest wiêkszy od rodzica. Postêpowanie jest powtarzane a¿ kopiec ponownie bedzie
-* spe³nia³ warunki kopca minimalnego.
-* @param[in, out] h  - wskaŸnik na kopiec minimalnyn, na którym dokonywane s¹ operacje
+/** Naprawia strukturÄ™ kopca przenoszÄ…c element do gÃ³ry.
+* PorÃ³wnuje element o numerze @p indeks z jego rodzicem i zamienia te 2 elementy miejscami
+* jeÅ›li element jest wiÄ™kszy od rodzica. PostÄ™powanie jest powtarzane aÅ¼ kopiec ponownie bedzie
+* speÅ‚niaÅ‚ warunki kopca minimalnego.
+* @param[in, out] h  - wskaÅºnik na kopiec minimalnyn, na ktÃ³rym dokonywane sÄ… operacje
 * @param[in] index   - numer elementu poddawanego naprawianiu
 */
 void minHeapRepairUp(MinHeap *h,int index);
 
 /** Dodaje miasto do kopca.
 * Element jest dodawany na koniec kopca.
-* @param[in, out] h   - wskaŸnik na kopiec, do którego dodawany jest element
-* @param[in] c        - wskaŸnik na miasto, które ma byc dodane
-* @return @p true jeœli uda siê dodaæ element, @false jeœli zabraknie pamiêci
+* @param[in, out] h   - wskaÅºnik na kopiec, do ktÃ³rego dodawany jest element
+* @param[in] c        - wskaÅºnik na miasto, ktÃ³re ma byc dodane
+* @return @p true jeÅ›li uda siÄ™ dodaÄ‡ element, @false jeÅ›li zabraknie pamiÄ™ci
 */
 bool minHeapAdd(MinHeap *h, City *c);
 
 /** Zdejmuje pierwszy element z kopca.
-Zdjêty element jest elementem minimalnym.
-* @param[in, out] h - wskaŸnik na strukturê kopca minimalnego
-* @return wskaŸnik na zdjêty element, czyli miasto
+ZdjÄ™ty element jest elementem minimalnym.
+* @param[in, out] h - wskaÅºnik na strukturÄ™ kopca minimalnego
+* @return wskaÅºnik na zdjÄ™ty element, czyli miasto
 */
 City* minHeapPeak(MinHeap *h);

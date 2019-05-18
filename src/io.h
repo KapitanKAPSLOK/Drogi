@@ -1,13 +1,20 @@
+/** @file
+ * Interfejs klasy odpowiedzialnej za interakcję z użytkownikiem.
+ *
+ * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
+ * @date 18.05.2019
+ */
+
 #pragma once
 
 #include "map.h"
 
 #include <stdbool.h>
 
-//chceck if on stdin is given command containing [size] chars
+///sprawdza czy na standardowym wejściu znajduje się napis @p command
 bool ioIsCommand(const char *command);
 
-///skip input data to first possible command, return 0 if end of file
+///przewija dane wejściowe do pierwszej możliwej komendy, jeśli skończył się plik zwraca @p false
 bool ioSkipToCommand();
 
 ///wczytuje dane i wykonuje polecenie addRoad
@@ -19,5 +26,5 @@ void ioRepairRoad(Map *m);
 ///wczytuje dane i wykonuje polecenie getRouteDescription
 void ioGetRouteDescription(Map *m);
 
-///wczytuje dane ze standardowego wej�cia i tworzy na ich podstawie now� drog� krajow�
+///wczytuje dane ze standardowego wejścia i tworzy na ich podstawie nową drogę krajową
 void ioMakeRoute(Map *m);

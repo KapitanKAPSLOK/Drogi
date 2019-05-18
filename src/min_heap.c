@@ -11,7 +11,7 @@ void minHeapSwap(MinHeap *h, int index1, int index2) {
 	h->tab[index2] = temp;
 }
 
-//przenosi element o numerze index do góry kopca dopóki kopiec nie bêdzie znów posortowany
+//przenosi element o numerze index do gÃ³ry kopca dopÃ³ki kopiec nie bÄ™dzie znÃ³w posortowany
 void minHeapRepairUp(MinHeap *h,int index) {
 	int i = index;
 	while (i != 1 && h->tab[i-1]->temporaryData[0] < h->tab[i / 2 - 1]->temporaryData[0]) {
@@ -20,7 +20,7 @@ void minHeapRepairUp(MinHeap *h,int index) {
 	}
 }
 
-//przesuwa pierwszy element w dó³ kopca dopóki jest on wiêkszy od swoich dzieci
+//przesuwa pierwszy element w dÃ³Å‚ kopca dopÃ³ki jest on wiÄ™kszy od swoich dzieci
 void minHeapRepairDown(MinHeap *h){
 	int i = 1; //nr naprawianego elementu, czyli jego pozycja w tablicy + 1
 	while (i < (h->size + 1) / 2) {
@@ -54,16 +54,16 @@ void minHeapRepairDown(MinHeap *h){
 //tworzy nowy kopiec
 MinHeap* minHeapCreate(void) {
 	MinHeap* h = malloc(sizeof(MinHeap));
-	if (h == NULL) return NULL; //nie uda³o siê zaalokowac pamiêci na strukturê
+	if (h == NULL) return NULL; //nie udaÅ‚o siÄ™ zaalokowac pamiÄ™ci na strukturÄ™
 	h->size = 0;
-	h->tab = malloc(10*sizeof(*(h->tab))); //domyœlny pocz¹tkowy rozmiar tablicy to 10
-	if (h->tab == NULL) { //za ma³o pamiêci na tablicê dziesiêcio elementow¹
+	h->tab = malloc(10*sizeof(*(h->tab))); //domyÅ›lny poczÄ…tkowy rozmiar tablicy to 10
+	if (h->tab == NULL) { //za maÅ‚o pamiÄ™ci na tablicÄ™ dziesiÄ™cio elementowÄ…
 		h->tab = malloc(sizeof(*(h->tab)));
-		if (h->tab == NULL) return NULL; //brak pamiêci
+		if (h->tab == NULL) return NULL; //brak pamiÄ™ci
 		h->maxSize = 1;
 		return h;
 	}
-	//uda³o siê zaalokowaæ pamiêæ na dziesiêcio elementow¹ tablicê
+	//udaÅ‚o siÄ™ zaalokowaÄ‡ pamiÄ™Ä‡ na dziesiÄ™cio elementowÄ… tablicÄ™
 	h->maxSize = 10;
 	return h;
 }
@@ -71,21 +71,21 @@ MinHeap* minHeapCreate(void) {
 //dodaje element @p c do kopca
 bool minHeapAdd(MinHeap *h, City *c) {
 	if (h->size >= h->maxSize) {
-		if (h->size == INT_MAX) return false; //osi¹gniêto maksymaln¹ iloœæ elementów
+		if (h->size == INT_MAX) return false; //osiÄ…gniÄ™to maksymalnÄ… iloÅ›Ä‡ elementÃ³w
 		if (h->maxSize < INT_MAX / 2) {
 			City **temp = realloc(h->tab, 2 * h->maxSize * sizeof(*(h->tab)));
-			if (temp == NULL) return false; //brak pamiêci
+			if (temp == NULL) return false; //brak pamiÄ™ci
 			h->tab = temp;
 			h->maxSize *= 2;
 		}
 		else {
 			City **temp = realloc(h->tab, INT_MAX * sizeof(*(h->tab))); //TODO: overflow
-			if (temp == NULL) return false; //brak pamiêci
+			if (temp == NULL) return false; //brak pamiÄ™ci
 			h->tab = temp;
 			h->maxSize = INT_MAX;
 		}
 	}
-	c->temporaryData[1] = h->size; //miasto pamiêta swój indeks w tablicy
+	c->temporaryData[1] = h->size; //miasto pamiÄ™ta swÃ³j indeks w tablicy
 	h->tab[h->size++] = c;
 
 	minHeapRepairUp(h,h->size);
@@ -103,7 +103,7 @@ City* minHeapPeak(MinHeap *h) {
 }
 
 
-//DEBUG, wyœwietl
+//DEBUG, wyÅ›wietl
 //void show(MinHeap *h) {
 //	for (int i = 0; i < h->size; ++i) {
 //		printf("%d ", i);

@@ -1,5 +1,5 @@
 /** @file
- * Interfejs klasy przechowuj¹cej funkcje dzia³aj¹ce na napisach.
+ * Interfejs klasy przechowujÄ…cej funkcje dziaÅ‚ajÄ…ce na napisach.
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
  * @date 03.04.2019
@@ -7,15 +7,15 @@
 #pragma once
 
 /** Dodaje napis @p addition na koniec napisu @p str
-* @param[in, out] str - wskaŸnik na modyfikowany napis
-* @param[in] addition - wskaŸnik na napis, który ma zostaæ doklejony
-* @return wskaŸnik na napis wynikowy lub @p NULL w przypadku braku pamiêci
+* @param[in, out] str - wskaÅºnik na modyfikowany napis
+* @param[in] addition - wskaÅºnik na napis, ktÃ³ry ma zostaÄ‡ doklejony
+* @return wskaÅºnik na napis wynikowy lub @p NULL w przypadku braku pamiÄ™ci
 */
 char *myStringAppendString(char *str, char *addition);
 
-/** Zamienia liczbê na napis i dokleja j¹ na koniec napisu @p str
-* @param[in] str -       wskaŸnik na modyfikowany napis
+/** Zamienia liczbÄ™ na napis i dokleja jÄ… na koniec napisu @p str
+* @param[in] str -       wskaÅºnik na modyfikowany napis
 * @param[in] addition  - doklejana liczba
-* @return wskaŸnik na napis wynikowy lub @p NULL w przypadku braku pamiêci
+* @return wskaÅºnik na napis wynikowy lub @p NULL w przypadku braku pamiÄ™ci
 */
 char *myStringAppendInt(char *str, int addition);

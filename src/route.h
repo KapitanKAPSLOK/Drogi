@@ -1,5 +1,5 @@
 /** @file
- * Interfejs klasy dróg krajowych
+ * Interfejs klasy drÃ³g krajowych
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
  * @date 03.04.2019
@@ -8,91 +8,91 @@
 
 #include "road.h"
 
-///struktura przechowuj¹ca informacjê o drogach krajowych
+///struktura przechowujÄ…ca informacjÄ™ o drogach krajowych
 typedef struct Route {
-	City *start,*end;  ///< miasta miêdzy którymi poprowadzona jest droga
+	City *start,*end;  ///< miasta miÄ™dzy ktÃ³rymi poprowadzona jest droga
 	unsigned id; ///< identyfikator drogi krajowej
-	RoadList *roads; ///< lista odcinków dróg wchodz¹cej w sk³ad drogi krajowej
+	RoadList *roads; ///< lista odcinkÃ³w drÃ³g wchodzÄ…cej w skÅ‚ad drogi krajowej
 }Route;
 
-///struktura przechowuj¹ca listê dróg
+///struktura przechowujÄ…ca listÄ™ drÃ³g
 typedef struct RouteList {
 	Route* r;
 	struct RouteList *next;
 }RouteList;
 
 
-/** @brief Tworzy now¹ drogê krajow¹.
-* Tworzy now¹ drogê krajow¹ o numerze @p nr, pomiêdzy miastami @p start i @p end 
-*z³o¿on¹ z odcinków dróg podanych przez @roads
+/** @brief Tworzy nowÄ… drogÄ™ krajowÄ….
+* Tworzy nowÄ… drogÄ™ krajowÄ… o numerze @p nr, pomiÄ™dzy miastami @p start i @p end 
+*zÅ‚oÅ¼onÄ… z odcinkÃ³w drÃ³g podanych przez @roads
 * @param[in] nr        - identyfikator drogi krajowej
-* @param[in] roads     - lista odcinków dróg sk³adaj¹cych siê na tworzon¹ drogê krajow¹
-* @param[in] start     - wskaŸnik na miasto, w którym zaczyna siê droga
-* @param[in] end       - wskaŸnik na miasto, na którym koñczy siê droga krajowa
-* @return WskaŸnik na utworzon¹ drogê krajow¹ lub NULL w przypadku braku pamiêci
+* @param[in] roads     - lista odcinkÃ³w drÃ³g skÅ‚adajÄ…cych siÄ™ na tworzonÄ… drogÄ™ krajowÄ…
+* @param[in] start     - wskaÅºnik na miasto, w ktÃ³rym zaczyna siÄ™ droga
+* @param[in] end       - wskaÅºnik na miasto, na ktÃ³rym koÅ„czy siÄ™ droga krajowa
+* @return WskaÅºnik na utworzonÄ… drogÄ™ krajowÄ… lub NULL w przypadku braku pamiÄ™ci
 */
 Route *routeMake(unsigned nr, RoadList *roads, City *start, City *end);
 
-/** @brief Dodaje drogê @p r na pocz¹tek listy dróg krajowych.
-* @param[in, out] l  - wskaŸnik na pierwszy element listy dróg
-* @param[in] r       - wskaŸnik na drogê, która ma zostaæ dodana
-* @return @p true jeœli uda³o siê dodaæ drogê lub @p false w przeciwnym wypadku
+/** @brief Dodaje drogÄ™ @p r na poczÄ…tek listy drÃ³g krajowych.
+* @param[in, out] l  - wskaÅºnik na pierwszy element listy drÃ³g
+* @param[in] r       - wskaÅºnik na drogÄ™, ktÃ³ra ma zostaÄ‡ dodana
+* @return @p true jeÅ›li udaÅ‚o siÄ™ dodaÄ‡ drogÄ™ lub @p false w przeciwnym wypadku
 */
 bool routeListAdd(RouteList **l, Route *r);
 
-/** @brief Usuwa listê dróg krajowych
-* Zwalnia pamiêæ po strukturze listy oraz pamiêæ po przechowywanych w niej drogach krajowych.
-* @param[in] l - wskaŸnik na usuwan¹ listê dróg krajowych
+/** @brief Usuwa listÄ™ drÃ³g krajowych
+* Zwalnia pamiÄ™Ä‡ po strukturze listy oraz pamiÄ™Ä‡ po przechowywanych w niej drogach krajowych.
+* @param[in] l - wskaÅºnik na usuwanÄ… listÄ™ drÃ³g krajowych
 */
 void routeListDelete(RouteList *l);
 
-/** @brief Usuwa drogê z listy dróg krajowych.
-* Usuwa drogê wskazan¹ przez wskaŸnik @p r z listy pod wskaŸnikiem @p l 
-* lub nic nie robi jeœli podanej drogi nie ma na liœcie
-* @param[in, out] l  - wskaŸnik na listê, z której ma zostac usuniêty element
-* @param[in] r       - wskaŸnik na drogê, która ma zostaæ usuniêta
+/** @brief Usuwa drogÄ™ z listy drÃ³g krajowych.
+* Usuwa drogÄ™ wskazanÄ… przez wskaÅºnik @p r z listy pod wskaÅºnikiem @p l 
+* lub nic nie robi jeÅ›li podanej drogi nie ma na liÅ›cie
+* @param[in, out] l  - wskaÅºnik na listÄ™, z ktÃ³rej ma zostac usuniÄ™ty element
+* @param[in] r       - wskaÅºnik na drogÄ™, ktÃ³ra ma zostaÄ‡ usuniÄ™ta
 */
 void routeListDeleteElement(RouteList **l, Route *r);
 
-/** @brief Szuka w liœcie dróg krajowych drogi o podanym numerze
-* @param[in] l  - wskaŸnik na listê dróg krajowych
+/** @brief Szuka w liÅ›cie drÃ³g krajowych drogi o podanym numerze
+* @param[in] l  - wskaÅºnik na listÄ™ drÃ³g krajowych
 * @param[in] nr - numer szukanej drogi
-* @return WskaŸnik na drogê krajow¹ o podanym numerze lub NULL jeœli takiej drogi nie ma na liœcie
+* @return WskaÅºnik na drogÄ™ krajowÄ… o podanym numerze lub NULL jeÅ›li takiej drogi nie ma na liÅ›cie
 */
 Route *routeListFind(RouteList *l, unsigned nr);
 
-/** @brief Tworzy listê z miast, przez które przechodzi droga krajowa.
-* @param[in] r - wskaŸnik na drogê krajow¹
-* @return Listê miast, przez które przechodzi droga krajowa @p r lub NULL jeœli zabraknie pamiêci
+/** @brief Tworzy listÄ™ z miast, przez ktÃ³re przechodzi droga krajowa.
+* @param[in] r - wskaÅºnik na drogÄ™ krajowÄ…
+* @return ListÄ™ miast, przez ktÃ³re przechodzi droga krajowa @p r lub NULL jeÅ›li zabraknie pamiÄ™ci
 */
 CityList *routeMakeCityList(Route *r);
 
-/** @brief Znajduje najkrótsz¹ drogê miêdzy miastami.
-* Wyszukuje ci¹g odcinków dróg ³¹cz¹cy miasta @p start i @p end,
-* którego suma d³ugoœci poszczególnych odcinków jest najkrótsza. Jeœli istnieje wiêcej jeden taki ci¹g dróg to
-* dla ka¿dego wariantu wyznacza najstarszy odcinek drogi i wybiera wariant, w którym ten odcinek jest najm³odszy.
-* Brane podd uwagê s¹ tylko te odcinki dróg, które nie przebiegaj¹ przez miasta podane w liœcie @p cities.
-* Dodatkowo jeœli zmienna @p norDirectly jest równa @p ture pomijany jest odcinek drogi ³¹cz¹cy podane miasta bezpoœrednio
-* @param[in] start        - wskaŸnik na pocz¹tkowe miasto
-* @param[in] end          - wskaŸnik na koñcowe miasto
-* @param[in] cities       - lista miast, przez które nie mo¿e przebiegaæ szukana droga
-* @param[in] notDirectly  - mówi czy nie uwzglêdniaæ odcinka drogi ³¹cz¹cego miasta bezpoœrednio
-* @return Listê odcinków dróg stanowi¹ce najkrótsz¹ trasê lub @p NULL jeœli wyst¹pi³ b³¹d: 
-* któreœ z miast nie istnieje (jest @p NULL), obie nazwy s¹ identyczne, 
-*nie uda³o siê jednoznacznie wyznaczyæ najkrótszej trasy, nie uda³o siê zaalokowaæ pamiêci
+/** @brief Znajduje najkrÃ³tszÄ… drogÄ™ miÄ™dzy miastami.
+* Wyszukuje ciÄ…g odcinkÃ³w drÃ³g Å‚Ä…czÄ…cy miasta @p start i @p end,
+* ktÃ³rego suma dÅ‚ugoÅ›ci poszczegÃ³lnych odcinkÃ³w jest najkrÃ³tsza. JeÅ›li istnieje wiÄ™cej jeden taki ciÄ…g drÃ³g to
+* dla kaÅ¼dego wariantu wyznacza najstarszy odcinek drogi i wybiera wariant, w ktÃ³rym ten odcinek jest najmÅ‚odszy.
+* Brane podd uwagÄ™ sÄ… tylko te odcinki drÃ³g, ktÃ³re nie przebiegajÄ… przez miasta podane w liÅ›cie @p cities.
+* Dodatkowo jeÅ›li zmienna @p norDirectly jest rÃ³wna @p ture pomijany jest odcinek drogi Å‚Ä…czÄ…cy podane miasta bezpoÅ›rednio
+* @param[in] start        - wskaÅºnik na poczÄ…tkowe miasto
+* @param[in] end          - wskaÅºnik na koÅ„cowe miasto
+* @param[in] cities       - lista miast, przez ktÃ³re nie moÅ¼e przebiegaÄ‡ szukana droga
+* @param[in] notDirectly  - mÃ³wi czy nie uwzglÄ™dniaÄ‡ odcinka drogi Å‚Ä…czÄ…cego miasta bezpoÅ›rednio
+* @return ListÄ™ odcinkÃ³w drÃ³g stanowiÄ…ce najkrÃ³tszÄ… trasÄ™ lub @p NULL jeÅ›li wystÄ…piÅ‚ bÅ‚Ä…d: 
+* ktÃ³reÅ› z miast nie istnieje (jest @p NULL), obie nazwy sÄ… identyczne, 
+*nie udaÅ‚o siÄ™ jednoznacznie wyznaczyÄ‡ najkrÃ³tszej trasy, nie udaÅ‚o siÄ™ zaalokowaÄ‡ pamiÄ™ci
 */
 RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirectly);
 
-/** @brief Sprawdza czy mo¿na naprawiæ drogê krajow¹ po usuniêcia odcinka drogi miêdzy podanymi miastami.
-* @param[in] r      - droga krajowa, z której ma zostaæ usuniêty odcinek drogi
-* @param[in] c1, c2 - miasta, miêdzy którymi odcinek drogi ma zostaæ usuniêty
-* @return @p true jeœi to mo¿liwe, @p false w przeciwnym razie
+/** @brief Sprawdza czy moÅ¼na naprawiÄ‡ drogÄ™ krajowÄ… po usuniÄ™cia odcinka drogi miÄ™dzy podanymi miastami.
+* @param[in] r      - droga krajowa, z ktÃ³rej ma zostaÄ‡ usuniÄ™ty odcinek drogi
+* @param[in] c1, c2 - miasta, miÄ™dzy ktÃ³rymi odcinek drogi ma zostaÄ‡ usuniÄ™ty
+* @return @p true jeÅ›i to moÅ¼liwe, @p false w przeciwnym razie
 */
 bool routeCanChange(Route *r, City *c1, City *c2);
 
-/** @brief Dodaje do drogi krajowej najkrótsz¹ œcie¿kê ³¹cz¹c¹ podane miasta, ale nie bezpoœrednio.
-* ¯eby mieæ pewnoœæ, ¿e operacja siê uda nale¿y sprawdziæ to funkcj¹ @ref routeCanChange.
-* @param[in]  r      - droga krajowa, do której zostanie dodany odcinek miêdzy miastami @p c1, @p c2
-* @param[in] c1, c2  - miasta, miêdzy którymi ma zostaæ dodana nowa droga
+/** @brief Dodaje do drogi krajowej najkrÃ³tszÄ… Å›cieÅ¼kÄ™ Å‚Ä…czÄ…cÄ… podane miasta, ale nie bezpoÅ›rednio.
+* Å»eby mieÄ‡ pewnoÅ›Ä‡, Å¼e operacja siÄ™ uda naleÅ¼y sprawdziÄ‡ to funkcjÄ… @ref routeCanChange.
+* @param[in]  r      - droga krajowa, do ktÃ³rej zostanie dodany odcinek miÄ™dzy miastami @p c1, @p c2
+* @param[in] c1, c2  - miasta, miÄ™dzy ktÃ³rymi ma zostaÄ‡ dodana nowa droga
 */
 void routeFix(Route *r, City *c1, City *c2);

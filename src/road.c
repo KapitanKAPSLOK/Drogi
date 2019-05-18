@@ -6,7 +6,7 @@
 
 ///////////////////////roadList/////////////////////////////
 
-//usuwa listê dróg
+//usuwa listÄ™ drÃ³g
 void roadListDelete(RoadList *l) {
 	if (l == NULL)return;
 	RoadList *p = l->next;
@@ -19,7 +19,7 @@ void roadListDelete(RoadList *l) {
 	free(l);
 }
 
-//dodaje element na pocz¹tek listy dróg
+//dodaje element na poczÄ…tek listy drÃ³g
 bool roadListAdd(RoadList **l, Road *r) {
 	RoadList *temp;
 	temp = malloc(sizeof(*temp));
@@ -31,7 +31,7 @@ bool roadListAdd(RoadList **l, Road *r) {
 	return true;
 }
 
-//dodaje na pocz¹tek listy l1 listê l2
+//dodaje na poczÄ…tek listy l1 listÄ™ l2
 void roadListAddList(RoadList **l1, RoadList *l2) {
 	if (l2 == NULL) return; //nie ma nic do dodania
 	RoadList *last = l2;
@@ -40,10 +40,10 @@ void roadListAddList(RoadList **l1, RoadList *l2) {
 	(*l1) = l2;
 }
 
-///usuwa element r z listy dróg
+///usuwa element r z listy drÃ³g
 void roadListDeleteElement(RoadList **l, Road *r) {
 	if (l == NULL || r == NULL || (*l)==NULL) return;
-	if ((*l)->r == r) { //element r znajduje siê na pocz¹tku
+	if ((*l)->r == r) { //element r znajduje siÄ™ na poczÄ…tku
 		RoadList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
@@ -62,7 +62,7 @@ void roadListDeleteElement(RoadList **l, Road *r) {
 	return;
 }
 
-//zwalnia pamiêæ po elementach przechowywanych w liœcie
+//zwalnia pamiÄ™Ä‡ po elementach przechowywanych w liÅ›cie
 void roadListDeleteElements(RoadList *l) {
 	while (l != NULL) {
 		free(l->r);
@@ -70,7 +70,7 @@ void roadListDeleteElements(RoadList *l) {
 	}
 }
 
-//zwraca wskaŸnik do drogi zawieraj¹cej z miasta o nazwie str lub NULL jeœli nie ma takiej drogi nie ma na liœcie
+//zwraca wskaÅºnik do drogi zawierajÄ…cej z miasta o nazwie str lub NULL jeÅ›li nie ma takiej drogi nie ma na liÅ›cie
 Road *roadListFindStr(RoadList *l, const char *str) {
 	while (l != NULL) {
 		if (!strcmp(l->r->city1->name, str) || !strcmp(l->r->city2->name, str)) return l->r;
@@ -79,7 +79,7 @@ Road *roadListFindStr(RoadList *l, const char *str) {
 	return NULL;
 }
 
-//odwraca listê
+//odwraca listÄ™
 RoadList *roadListReverse(RoadList *l) {
 	if (l == NULL) return NULL;
 	RoadList *prev = NULL;
@@ -92,7 +92,7 @@ RoadList *roadListReverse(RoadList *l) {
 	return prev;
 }
 
-//jeœli któraœ z dróg w liœcie l dochodzi do miasta c zwraca wskaŸnik do niej w przeciwnym razie NULL
+//jeÅ›li ktÃ³raÅ› z drÃ³g w liÅ›cie l dochodzi do miasta c zwraca wskaÅºnik do niej w przeciwnym razie NULL
 Road *roadListContain(RoadList *l, City *c) {
 	while (l != NULL) {
 		if (roadConnectCity(l->r,c)) return l->r;
@@ -107,12 +107,12 @@ Road *roadListContain(RoadList *l, City *c) {
 //zmienia rok ostatniej modyfikacji drogi
 bool roadRepair(Road *r, int year) {
 	if (year < r->modificationDate) return false;
-	if (year == 0) return false; //nie by³o roku 0
+	if (year == 0) return false; //nie byÅ‚o roku 0
 	r->modificationDate = year;
 	return true;
 }
 
-//zwraca jedno z miast, które ³¹czy droga, ale ró¿ne od miasta c
+//zwraca jedno z miast, ktÃ³re Å‚Ä…czy droga, ale rÃ³Å¼ne od miasta c
 City *roadGetCity(Road *r, City *c) {
 	if (r->city1 != c) return r->city1;
 	return r->city2;
@@ -125,12 +125,12 @@ bool roadConnectCity(Road *r, City *c) {
 	return false;
 }
 
-//zwraca informacje o drodze w formacie ";d³ugoœæ;data modyfikacji;miasto inne ni¿ c"
+//zwraca informacje o drodze w formacie ";dÅ‚ugoÅ›Ä‡;data modyfikacji;miasto inne niÅ¼ c"
 char *roadGetDescription(Road *r, City *c) {
 	char *str = malloc(sizeof(*str));
-	if (str == NULL) return NULL; //brak pamiêci
-	*str = '\0'; //napis w C koñczy siê zerem
-	//jeœli przy do³¹czaniu napisów zostanie zwrócony NULL znaczy, ¿e zabrak³o pamiêci, wtedy zwracany jest NULL
+	if (str == NULL) return NULL; //brak pamiÄ™ci
+	*str = '\0'; //napis w C koÅ„czy siÄ™ zerem
+	//jeÅ›li przy doÅ‚Ä…czaniu napisÃ³w zostanie zwrÃ³cony NULL znaczy, Å¼e zabrakÅ‚o pamiÄ™ci, wtedy zwracany jest NULL
 	if (!(str = myStringAppendString(str, ";"))) return NULL;
 	if (!(str = myStringAppendInt(str, r->length))) return NULL;
 	if (!(str = myStringAppendString(str, ";"))) return NULL;
