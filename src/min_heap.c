@@ -79,7 +79,7 @@ bool minHeapAdd(MinHeap *h, City *c) {
 			h->maxSize *= 2;
 		}
 		else {
-			City **temp = realloc(h->tab, INT_MAX * sizeof(*(h->tab)));
+			City **temp = realloc(h->tab, INT_MAX * sizeof(*(h->tab))); //TODO: overflow
 			if (temp == NULL) return false; //brak pamiêci
 			h->tab = temp;
 			h->maxSize = INT_MAX;
@@ -104,11 +104,11 @@ City* minHeapPeak(MinHeap *h) {
 
 
 //DEBUG, wyœwietl
-void show(MinHeap *h) {
-	for (int i = 0; i < h->size; ++i) {
-		printf("%d ", i);
-		printf(h->tab[i]->name);
-		printf(" ");
-	}
-	printf("\n");
-}
+//void show(MinHeap *h) {
+//	for (int i = 0; i < h->size; ++i) {
+//		printf("%d ", i);
+//		printf(h->tab[i]->name);
+//		printf(" ");
+//	}
+//	printf("\n");
+//}

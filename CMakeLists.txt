@@ -34,7 +34,9 @@ set(SOURCE_FILES
 	src/min_heap.c
 	src/min_heap.h
 	src/myString.c
-	src/myString.h)
+	src/myString.h
+	src/io.c
+	src/io.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})
