@@ -72,14 +72,14 @@ MinHeap* minHeapCreate(void) {
 bool minHeapAdd(MinHeap *h, City *c) {
 	if (h->size >= h->maxSize) {
 		if (h->size == INT_MAX) return false; //osiągnięto maksymalną ilość elementów
-		if (h->maxSize < INT_MAX / 2) {
+		if (h->maxSize * sizeof(*(h->tab)) < INT_MAX / 2) {
 			City **temp = realloc(h->tab, 2 * h->maxSize * sizeof(*(h->tab)));
 			if (temp == NULL) return false; //brak pamięci
 			h->tab = temp;
 			h->maxSize *= 2;
 		}
 		else {
-			City **temp = realloc(h->tab, INT_MAX * sizeof(*(h->tab))); //TODO: overflow
+			City **temp = realloc(h->tab, INT_MAX);
 			if (temp == NULL) return false; //brak pamięci
 			h->tab = temp;
 			h->maxSize = INT_MAX;

@@ -252,7 +252,7 @@ void ioGetRouteDescription(Map *m) {
 	}
 	printf(str);
 	printf("\n");
-	free(str);
+	free((void *)str);
 	return;
 }
 
@@ -274,7 +274,7 @@ void ioMakeRoute(Map *m) {
 	//wczytywanie długości odcinka drogi
 	unsigned length;
 	if (scanf("%u", &length) != 1) {
-		free(city1);
+		free((void *)city1);
 		ioError();
 		return;
 	}
@@ -282,7 +282,7 @@ void ioMakeRoute(Map *m) {
 	//wczytywanie roku ostatniej modyfikacji odcinka drogi
 	int year;
 	if (scanf("%d", &year) != 1) {
-		free(city1);
+		free((void *)city1);
 		ioError();
 		return;
 	}
@@ -290,7 +290,7 @@ void ioMakeRoute(Map *m) {
 	//wczytywanie drugiego miasta
 	const char *city2 = ioGetCity();
 	if (city2 == NULL) {
-		free(city1);
+		free((void *)city1);
 		return;
 	}
 	if (ioEmptyCommand()) return;
@@ -298,13 +298,13 @@ void ioMakeRoute(Map *m) {
 	//wczytano pierwszy odcinek drogi można utworzyć drogę krajową z niego
 	if(!makeRoute(m, nr, city1, city2, length, year)){
 		//nie udało się utworzyć drogi krajowej o podanych parametrach
-		free(city1);
-		free(city2);
+		free((void *)city1);
+		free((void *)city2);
 		ioError();
 		return;
 	}
-	free(city1);
-	free(city2);
+	free((void *)city1);
+	free((void *)city2);
 	char c = getchar();
 	//wczytywanie kolejnych odcinków dróg, które mają zostać dodane do drogi krajowej
 	while (c != '\n' && c != EOF) {
@@ -314,7 +314,7 @@ void ioMakeRoute(Map *m) {
 		//wczytywanie długości odcinka drogi
 		unsigned length;
 		if (scanf("%u", &length) != 1) {
-			free(city1);
+			free((void *)city1);
 			ioError();
 			return;
 		}
@@ -322,7 +322,7 @@ void ioMakeRoute(Map *m) {
 		//wczytywanie roku ostatniej modyfikacji odcinka drogi
 		int year;
 		if (scanf("%d", &year) != 1) {
-			free(city1);
+			free((void *)city1);
 			ioError();
 			return;
 		}
@@ -332,11 +332,11 @@ void ioMakeRoute(Map *m) {
 		if (city2 == NULL) return;
 
 		if (!addToRoute(m, nr, city2, length, year)) {
-			free(city2);
+			free((void *)city2);
 			ioError();
 			return;
 		}
-		free(city2);
+		free((void *)city2);
 		c = getchar();
 	}
 	ungetc(c, stdin);
