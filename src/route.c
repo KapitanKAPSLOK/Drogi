@@ -4,7 +4,7 @@
 #include "min_heap.h"
 
 #include <limits.h>
-#include<string.h>
+#include <string.h>
 
 
 int min(int a, int b) {

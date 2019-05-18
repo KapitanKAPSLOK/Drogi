@@ -64,7 +64,6 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
 	return roadRepair(r, repairYear);
 }
 
-#include <stdio.h>
 //£¹czy dwa ró¿ne miasta drog¹ krajow¹.
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
 	if (map == NULL) return false;
@@ -123,7 +122,6 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	return true;
 }
 
-
 //Udostêpnia informacje o drodze krajowej.
 char const* getRouteDescription(Map *map, unsigned routeId) {
 	Route *r = routeListFind(map->routes, routeId);
@@ -162,4 +160,44 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
 	}
 	roadListReverse(start); //trzeba naprawiæ odwrócon¹ listê
 	return str;
+}
+
+//dodaje odcinek drogi do istniej¹cej drogi krajowej
+bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, int year) {
+	if (map == NULL || city == NULL) return false;
+	Route *r = routeListFind(map->routes, routeId);
+	if (r == NULL) return false;
+	Road *road = roadListFindStr(r->end->roads, city);
+	if (road == NULL) {
+		//nie ma odcinka drogi do miasta o podanej nazwie, trzeba go stworzyæ
+		if (!addRoad(map, r->end->name, city, length, year)) return false;
+		road = roadListFindStr(r->end->roads, city);
+	}
+	else {
+		if (road->length != length) return false; //d³ugoœæ odcinka drogi siê nie zgadza
+		if (!roadRepair(road, year)) return false; //z³a data remontu
+	}
+
+	if (!roadListAdd(&(r->roads), road)) return false; //nie uda³o siê dodaæ odcinka drogi do drogi krajowej
+	r->end = roadGetCity(road, r->end);
+	return true;
+}
+
+//tworzy now¹ drogê krajow¹ miêdzy podanymi miastami ³¹cz¹c je bezpoœrenio odcinkiem drogi
+bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year) {
+	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze ju¿ istnieje
+	addRoad(map, city1, city2, length, year);//TODO
+	if (!repairRoad(map, city1, city2, year)) return false;
+	City *c = cityHashTableFind(map->cities, city1);
+	if (c == NULL) return false; //miasto powinno byæ dodane w addRoad, ale mog³o zabrakn¹æ pamiêci
+	Road *road = roadListFindStr(c->roads, city2);
+	if (road == NULL) return false;
+	RoadList *l=NULL;
+	if (!roadListAdd(&l, road)) return false;
+	Route *route = routeMake(routeId, l, c, cityHashTableFind(map->cities, city2));
+	if (route == NULL) {
+		return false;
+	}
+	if (!routeListAdd(&(map->routes), route)) return false; //nie uda³o siê dodaæ drogi krajowej do mapy
+	return true;
 }

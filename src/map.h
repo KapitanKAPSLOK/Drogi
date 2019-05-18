@@ -137,4 +137,9 @@ bool removeRoad(Map *map, const char *city1, const char *city2);
  */
 char const* getRouteDescription(Map *map, unsigned routeId);
 
+bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, int year);
+
+//tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi
+bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year);
+
 #endif /* __MAP_H__ */

@@ -1,5 +1,6 @@
 #include "map.h"
 #include "min_heap.h"
+#include "io.h"
 #include <stdio.h>
 
 #include <stdlib.h>
@@ -51,6 +52,21 @@ int main() {
   
   deleteMap(m);
  
- 
+
+  Map* map = newMap();
+
+  while (ioSkipToCommand()) {
+	  if (ioIsCommand("addRoad"))
+		  ioAddRoad(map);
+	  else if (ioIsCommand("repairRoad"))
+		  ioRepairRoad(map);
+	  else if (ioIsCommand("getRouteDescription"))
+		  ioGetRouteDescription(map);
+	  else
+		  ioMakeRoute(map);
+  }
+
+  deleteMap(map);
+
   return 0;
 }

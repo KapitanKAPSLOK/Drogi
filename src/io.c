@@ -28,7 +28,7 @@ bool ioReadChar(char* c) {//TODO
 bool ioSkipToCommand() {
 	char c = getchar();
 	while (c == '\n' || c == EOF || c == '#') {
-		if (c == EOF)return false;
+		if (c == EOF) return false;
 		else if (c == '#') ioSkipLine();
 		c = getchar();
 	}
@@ -45,8 +45,8 @@ void ioError() {
 //chceck if on stdin is given command containing [size] chars
 bool ioIsCommand(const char *command) {
 	//liczenie d³ugoœci polecenia
-	int size = 0;
-	while (command[size++] != '\0');
+	int size = -1;
+	while (command[++size] != '\0');
 
 	char c = ' ';
 	int i = 0;
@@ -83,8 +83,8 @@ char* ioGetCity() {
 		ioError();
 		return NULL;
 	}
-	str = '\0';
-	char *buffer = malloc(21 * sizeof(*str));
+	*str = '\0';
+	char *buffer = malloc(21 * sizeof(*buffer));
 	if (buffer == NULL) {
 		free(str);
 		ioError();
@@ -106,7 +106,8 @@ char* ioGetCity() {
 		}
 		buffer[i] = getchar();
 		//sprawdzanie czy to ju¿ koniec nazwy miasta
-		if (buffer[i] == ';') {
+		if (buffer[i] == ';' || buffer[i]=='\n') {
+			ungetc(buffer[i], stdin);
 			buffer[i] = '\0';
 			str = myStringAppendString(str, buffer);
 			free(buffer);
@@ -228,8 +229,8 @@ void ioGetRouteDescription(Map *m) {
 		ioError();
 		return;
 	}
-	int nr;
-	if (scanf("%d", &nr) != 1) {
+	unsigned nr;
+	if (scanf("%u", &nr) != 1) {
 		ioError();
 		return;
 	}
@@ -247,5 +248,92 @@ void ioGetRouteDescription(Map *m) {
 	}
 	printf(str);
 	free(str);
+	return;
+}
+
+//wczytuje dane ze standardowego wejœcia i tworzy na ich podstawie now¹ drogê krajow¹
+void ioMakeRoute(Map *m) {
+	if (ioEmptyCommand()) return;
+	//wczytywanie numeru drogi
+	unsigned nr;
+	if (scanf("%u", &nr) != 1) {
+		ioError();
+		return;
+	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie miasta startwego
+	const char *city1 = ioGetCity();
+	if (city1 == NULL) return; //nie uda³o siê wczytaæ nazwy miasta
+	if (!ioIsSemicolon()) return;
+	if (ioEmptyCommand()) return;
+	//wczytywanie d³ugoœci odcinka drogi
+	unsigned length;
+	if (scanf("%u", &length) != 1) {
+		free(city1);
+		ioError();
+		return;
+	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie roku ostatniej modyfikacji odcinka drogi
+	int year;
+	if (scanf("%d", &year) != 1) {
+		free(city1);
+		ioError();
+		return;
+	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie drugiego miasta
+	const char *city2 = ioGetCity();
+	if (city2 == NULL) {
+		free(city1);
+		return;
+	}
+	if (ioEmptyCommand()) return;
+
+	//wczytano pierwszy odcinek drogi mo¿na utworzyæ drogê krajow¹ z niego
+	if(!makeRoute(m, nr, city1, city2, length, year)){
+		//nie uda³o siê utworzyæ drogi krajowej o podanych parametrach
+		free(city1);
+		free(city2);
+		ioError();
+		return;
+	}
+	free(city1);
+	free(city2);
+	char c = getchar();
+	//wczytywanie kolejnych odcinków dróg, które maj¹ zostaæ dodane do drogi krajowej
+	while (c != '\n' && c != EOF) {
+		ungetc(c, stdin);
+
+		if (!ioIsSemicolon()) return;
+		//wczytywanie d³ugoœci odcinka drogi
+		unsigned length;
+		if (scanf("%u", &length) != 1) {
+			free(city1);
+			ioError();
+			return;
+		}
+		if (!ioIsSemicolon()) return;
+		//wczytywanie roku ostatniej modyfikacji odcinka drogi
+		int year;
+		if (scanf("%d", &year) != 1) {
+			free(city1);
+			ioError();
+			return;
+		}
+		if (!ioIsSemicolon()) return;
+		//wczytywanie kolejnego miasta
+		const char *city2 = ioGetCity();
+		if (city2 == NULL) return;
+
+		if (!addToRoute(m, nr, city2, length, year)) {
+			free(city2);
+			ioError();
+			return;
+		}
+		free(city2);
+		c = getchar();
+	}
+	ungetc(c, stdin);
 	return;
 }
