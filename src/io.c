@@ -84,7 +84,8 @@ char* ioGetCity() {
 		return NULL;
 	}
 	*str = '\0';
-	char *buffer = malloc(21 * sizeof(*buffer));
+	int bufferSize = 101;
+	char *buffer = malloc(bufferSize * sizeof(*buffer));
 	if (buffer == NULL) {
 		free(str);
 		ioError();
@@ -92,10 +93,12 @@ char* ioGetCity() {
 	}
 	int i = 0;
 	buffer[i] = getchar();
+	buffer[bufferSize-1] = '\0';
+	int howLong = 0;//liczy aktualną długość nazwy miasta
+
 	while (buffer[i] != EOF && buffer[i++] != '\n') {
 		//sprawdzanie czy bufor się nie napełnił
-		if (i >= 20) {
-			buffer[i] = '\0';
+		if (i >= bufferSize-1) {
 			str = myStringAppendString(str, buffer);
 			if (str == NULL) {
 				free(buffer);
@@ -103,6 +106,19 @@ char* ioGetCity() {
 				return NULL;
 			}
 			i = 0;
+
+			if (++howLong == 100) {
+				//nazwa miasta jest bardzo długa i bardziej optymalny jest większy bufor
+				char* temp = realloc(buffer, bufferSize * 10 * sizeof(*buffer));
+				if (temp == NULL) free(str);
+				else {
+					buffer = temp;
+					bufferSize *= 10;
+					buffer[bufferSize - 1] = '\0';
+					howLong = 0;
+				}
+
+			}
 		}
 		buffer[i] = getchar();
 		//sprawdzanie czy to już koniec nazwy miasta
@@ -293,7 +309,6 @@ void ioMakeRoute(Map *m) {
 		free((void *)city1);
 		return;
 	}
-	if (ioEmptyCommand()) return;
 
 	//wczytano pierwszy odcinek drogi można utworzyć drogę krajową z niego
 	if(!makeRoute(m, nr, city1, city2, length, year)){
