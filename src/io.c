@@ -3,6 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
+
+//zwiększa numer wiersza o add i zwraca go
+unsigned rowNumber(int add) {
+	static unsigned line = 1;//zmienna pamiętająca aktualny numer wiersza we wczytywanych danych
+	line = line + add;
+	return line;
+}
 
 //skip input data to end of line
 void ioSkipLine() {
@@ -10,19 +19,20 @@ void ioSkipLine() {
 	while (c != '\n' && c != EOF) {
 		c = getchar();
 	}
+	rowNumber(1);
 	return;
 }
 
 //return 1 if succesfully read a char or 0 otherwise
-bool ioReadChar(char* c) {//TODO
-	*c = getchar();
-	if (*c != '0' && *c != '1' && *c != '2' && *c != '3' && *c != '\n') {
-		fputs("ERROR\n", stderr);
-		ioSkipLine();
-		return false;
-	}
-	return true;
-}
+//bool ioReadChar(char* c) {//TODO
+//	*c = getchar();
+//	if (*c != '0' && *c != '1' && *c != '2' && *c != '3' && *c != '\n') {
+//		fputs("ERROR\n", stderr);
+//		ioSkipLine();
+//		return false;
+//	}
+//	return true;
+//}
 
 //skip input data to first possible command, return 0 if end of file
 bool ioSkipToCommand() {
@@ -30,6 +40,7 @@ bool ioSkipToCommand() {
 	while (c == '\n' || c == EOF || c == '#') {
 		if (c == EOF) return false;
 		else if (c == '#') ioSkipLine();
+		else rowNumber(1); //zwiększanie numeru aktualnie czytanej linii o 1
 		c = getchar();
 	}
 	ungetc(c, stdin);
@@ -38,8 +49,7 @@ bool ioSkipToCommand() {
 
 //printf error message and skip to the end of the line
 void ioError() {
-	fputs("ERROR\n", stderr);
-	ioSkipLine();
+	fprintf(stderr, "ERROR %u\n", rowNumber(0));
 }
 
 //chceck if on stdin is given command containing [size] chars
@@ -66,9 +76,8 @@ bool ioIsCommand(const char *command) {
 bool ioEmptyCommand() {
 	char c = getchar();
 	if (c == '\n' || c == ' ') {
-		fputs("ERROR\n", stderr);
 		ungetc(c, stdin);
-		ioSkipLine();
+		ioError();
 		return true;
 	}
 	ungetc(c, stdin);
@@ -148,6 +157,60 @@ bool ioIsSemicolon() {
 	return true;
 }
 
+//czyta inta ze standardowego wejścia, zwraca true jeśli się uda, false w innym wypadku
+bool ioReadInteger(int *v) {
+	char buffer[11];
+	for (int i = 0; i < 11; ++i) {
+		buffer[i] = getchar();
+		if (buffer[i] == ';' || buffer[i] == '\n' || buffer[i] == EOF) {
+			//osiągnięto koniec liczby
+			ungetc(buffer[i], stdin);
+			if (i == 0) return false; //nie wczytano, żadnego poprawnego znaku
+			break;
+		}
+	}
+	char *index;
+	//w tym miejscu wczytano liczbę do bufora
+	long temp = strtol(buffer, &index, 10);
+	if (temp == 0 && errno == EINVAL) return false;
+	if (errno == ERANGE) return false;
+	if (temp > INT_MAX || temp < INT_MIN) return false;
+	*v = temp;
+	return true;
+}
+
+//czyta unsigned inta ze standardowego wejścia, zwraca true jeśli się uda, false w innym wypadku
+bool ioReadUnsigned(unsigned *v) {
+	char sign = getchar();
+	if (sign == '-') { //podana liczba jest ujemna, nie można jej zinterpretować jako unsigned int
+		ungetc(sign, stdin);
+		return false;
+	}
+	ungetc(sign, stdin);
+	char buffer[10];
+	for (int i = 0; i < 10; ++i) {
+		buffer[i] = getchar();
+		if (buffer[i] == ';' || buffer[i] == '\n' || buffer[i] == EOF) {
+			//osiągnięto koniec liczby
+			ungetc(buffer[i], stdin);
+			if (i == 0) return false; //nie wczytano, żadnego poprawnego znaku
+			break;
+		}
+		if (buffer[i] < 48 || buffer[i] > 57) {
+			//wczytany znak nie jest cyfrą
+			ungetc(buffer[i], stdin);
+			return false;
+		}
+	}
+	char *index;
+	//w tym miejscu wczytano liczbę do bufora
+	unsigned long temp = strtoul(buffer, &index, 10);
+	if (errno == ERANGE) return false;
+	if (temp > UINT_MAX) return false;
+	*v = temp;
+	return true;
+}
+
 //wczytuje dane i wykonuje polecenie addRoad
 void ioAddRoad(Map *m) {
 	if (!ioIsSemicolon()) return; //sprawdzanie czy jest średnik
@@ -167,7 +230,8 @@ void ioAddRoad(Map *m) {
 	}
 	//wczytywanie długości odcinka drogi
 	unsigned length;
-	if (scanf("%u", &length) != 1) {
+	if (!ioReadUnsigned(&length)) {
+		ioError();
 		free(c1);
 		free(c2);
 		return;
@@ -179,7 +243,8 @@ void ioAddRoad(Map *m) {
 	}
 	//wczytywanie roku remontu
 	int year;
-	if (scanf("%d", &year) != 1) {
+	if (!ioReadInteger(&year)) {
+		ioError();
 		free(c1);
 		free(c2);
 		return;
@@ -191,9 +256,10 @@ void ioAddRoad(Map *m) {
 		return;
 	}
 	//dodawanie odcinka drogi o wczytanych parametrach do mapy
-	if (!addRoad(m, c1, c2, length, year)) ioError();
+	if (!addRoad(m, c1, c2, (unsigned)length, year)) ioError();
 	free(c1);
 	free(c2);
+	ungetc(c, stdin);
 	return;
 }
 
@@ -220,8 +286,8 @@ void ioRepairRoad(Map *m) {
 	}
 	if (!ioIsSemicolon()) return;
 	int year;
-	if (scanf("%d", &year) != 1) {
-		//nie udało się wczytać roku
+	if (!ioReadInteger(&year)) {
+		ioError();
 		free(c1);
 		free(c2);
 		return;
@@ -233,11 +299,11 @@ void ioRepairRoad(Map *m) {
 		return;
 	}
 	if (!repairRoad(m, c1, c2, year)) {
-		ungetc(c, stdin);
 		ioError();
 	}
 	free(c1);
 	free(c2);
+	ungetc(c, stdin);
 	return;
 }
 
@@ -269,6 +335,7 @@ void ioGetRouteDescription(Map *m) {
 	printf(str);
 	printf("\n");
 	free((void *)str);
+	ungetc(c, stdin);
 	return;
 }
 
@@ -277,7 +344,7 @@ void ioMakeRoute(Map *m) {
 	if (ioEmptyCommand()) return;
 	//wczytywanie numeru drogi
 	unsigned nr;
-	if (scanf("%u", &nr) != 1) {
+	if (!ioReadUnsigned(&nr)) {
 		ioError();
 		return;
 	}
@@ -289,7 +356,7 @@ void ioMakeRoute(Map *m) {
 	if (ioEmptyCommand()) return;
 	//wczytywanie długości odcinka drogi
 	unsigned length;
-	if (scanf("%u", &length) != 1) {
+	if (!ioReadUnsigned(&length)) {
 		free((void *)city1);
 		ioError();
 		return;
@@ -297,7 +364,7 @@ void ioMakeRoute(Map *m) {
 	if (!ioIsSemicolon()) return;
 	//wczytywanie roku ostatniej modyfikacji odcinka drogi
 	int year;
-	if (scanf("%d", &year) != 1) {
+	if (!ioReadInteger(&year)) {
 		free((void *)city1);
 		ioError();
 		return;
@@ -328,7 +395,7 @@ void ioMakeRoute(Map *m) {
 		if (!ioIsSemicolon()) return;
 		//wczytywanie długości odcinka drogi
 		unsigned length;
-		if (scanf("%u", &length) != 1) {
+		if (!ioReadUnsigned(&length)) {
 			free((void *)city1);
 			ioError();
 			return;
@@ -336,7 +403,7 @@ void ioMakeRoute(Map *m) {
 		if (!ioIsSemicolon()) return;
 		//wczytywanie roku ostatniej modyfikacji odcinka drogi
 		int year;
-		if (scanf("%d", &year) != 1) {
+		if (!ioReadInteger(&year)) {
 			free((void *)city1);
 			ioError();
 			return;

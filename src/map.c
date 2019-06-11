@@ -186,7 +186,7 @@ bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, i
 //tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi
 bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year) {
 	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze już istnieje
-	addRoad(map, city1, city2, length, year);//TODO
+	addRoad(map, city1, city2, length, year);
 	if (!repairRoad(map, city1, city2, year)) return false;
 	City *c = cityHashTableFind(map->cities, city1);
 	if (c == NULL) return false; //miasto powinno być dodane w addRoad, ale mogło zabraknąć pamięci

@@ -6,11 +6,10 @@
 #include <limits.h>
 #include <string.h>
 
-//TODO
+
 int min(int a, int b) {
 	return (a < b) ? a : b;
 }
-
 
 //////////////////////routeList/////////////////////////
 

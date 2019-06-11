@@ -12,7 +12,6 @@
 
 int main() {
   Map* map = newMap();
-
   while (ioSkipToCommand()) {
 	  if (ioIsCommand("addRoad"))
 		  ioAddRoad(map);
@@ -22,6 +21,7 @@ int main() {
 		  ioGetRouteDescription(map);
 	  else
 		  ioMakeRoute(map);
+	  ioSkipLine();
   }
 
   deleteMap(map);

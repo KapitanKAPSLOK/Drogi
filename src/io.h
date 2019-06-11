@@ -11,6 +11,9 @@
 
 #include <stdbool.h>
 
+ ///przewija dane wejściowe do końca linii
+void ioSkipLine();
+
 ///sprawdza czy na standardowym wejściu znajduje się napis @p command
 bool ioIsCommand(const char *command);
 
