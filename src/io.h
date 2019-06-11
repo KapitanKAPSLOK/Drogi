@@ -31,3 +31,6 @@ void ioGetRouteDescription(Map *m);
 
 ///wczytuje dane ze standardowego wejścia i tworzy na ich podstawie nową drogę krajową
 void ioMakeRoute(Map *m);
+
+///wczytuje potrzebne dane i wykonuje polecenie addRoute
+void ioNewRoute(Map *m);

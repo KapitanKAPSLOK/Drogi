@@ -201,3 +201,13 @@ bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2,
 	if (!routeListAdd(&(map->routes), route)) return false; //nie udało się dodać drogi krajowej do mapy
 	return true;
 }
+
+//usuwa drogę krajową o podanym numerze, nie usuwa zawartych w niej odcinków dróg i miast
+bool removeRoute(Map *map, unsigned routeId) {
+	Route *r = routeListFind(map->routes, routeId);
+	if (r == NULL) return false; //nie istnieje droga krajowa o podanym numerze
+	routeListDeleteElement(&(map->routes), r);
+	roadListDelete(r->roads);
+	free(r);
+	return true;
+}

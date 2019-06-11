@@ -296,6 +296,8 @@ void ioRepairRoad(Map *m) {
 	if (c != '\n' && c != EOF) { //sprawdzanie czy po poleceniu nie ma jeszcze czegoś
 		ungetc(c, stdin);
 		ioError();
+		free(c1);
+		free(c2);
 		return;
 	}
 	if (!repairRoad(m, c1, c2, year)) {
@@ -422,5 +424,45 @@ void ioMakeRoute(Map *m) {
 		c = getchar();
 	}
 	ungetc(c, stdin);
+	return;
+}
+
+//wczytuje potrzebne dane i wykonuje polecenie addRoute
+void ioNewRoute(Map *m) {
+	if (ioEmptyCommand()) return;
+	if (!ioIsSemicolon()) return;
+	//wczytywanie numeru drogi
+	unsigned id;
+	if (!ioReadUnsigned(&id)) {
+		ioError();
+		return;
+	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie nazwy pierwszego miasta
+	const char *city1 = ioGetCity();
+	if (city1 == NULL) return;
+	if (!ioIsSemicolon()) {
+		free(city1);
+		return;
+	}
+	//wczytywanie nazwy drugiego miasta
+	const char *city2 = ioGetCity();
+	if (*city2 == NULL) {
+		free(city1);
+		return;
+	}
+	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	c = getchar();
+	if (c != '\n' && c != EOF) {
+		ungetc(c, stdin);
+		ioError();
+		free(city1);
+		free(city2);
+		return;
+	}
+	//wczytano poprawnie dane, wykonywanie polecenia
+	if (!newRoute(m, id, city2, city2)) ioError();
+	free(city1);
+	free(city2);
 	return;
 }

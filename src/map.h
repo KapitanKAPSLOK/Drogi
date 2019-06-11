@@ -142,4 +142,7 @@ bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, i
 //tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi
 bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year);
 
+//TODO: opis
+bool removeRoute(Map *map, unsigned routeId);
+
 #endif /* __MAP_H__ */
