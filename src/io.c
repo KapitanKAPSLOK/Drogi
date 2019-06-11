@@ -442,27 +442,27 @@ void ioNewRoute(Map *m) {
 	const char *city1 = ioGetCity();
 	if (city1 == NULL) return;
 	if (!ioIsSemicolon()) {
-		free(city1);
+		free((void *)city1);
 		return;
 	}
 	//wczytywanie nazwy drugiego miasta
 	const char *city2 = ioGetCity();
-	if (*city2 == NULL) {
-		free(city1);
+	if (city2 == NULL) {
+		free((void *)city1);
 		return;
 	}
 	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
-	c = getchar();
+	char c = getchar();
 	if (c != '\n' && c != EOF) {
 		ungetc(c, stdin);
 		ioError();
-		free(city1);
-		free(city2);
+		free((void *)city1);
+		free((void *)city2);
 		return;
 	}
 	//wczytano poprawnie dane, wykonywanie polecenia
 	if (!newRoute(m, id, city2, city2)) ioError();
-	free(city1);
-	free(city2);
+	free((void *)city1);
+	free((void *)city2);
 	return;
 }
