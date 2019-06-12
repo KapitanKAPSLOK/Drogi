@@ -49,6 +49,7 @@ void routeListDeleteElement(RouteList **l, Route *r) {
 		RouteList *temp = *l;
 		*l = (*l)->next;
 		free(temp);
+		return;
 	}
 	while ((*l)->next != NULL) {
 		if ((*l)->next->r == r) {

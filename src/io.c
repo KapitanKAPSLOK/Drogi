@@ -265,12 +265,8 @@ void ioAddRoad(Map *m) {
 
 //wczytuje dane i wykonuje polecenie repairRoad
 void ioRepairRoad(Map *m) {
-	char c = getchar();
-	if (c != ';') {
-		ungetc(c, stdin);
-		ioError();
-		return;
-	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie nazwy miasta
 	char *c1 = ioGetCity();
 	if (c1 == NULL) return; //wystąpił błąd podczas czytania nazwy miasta
 	if (!ioIsSemicolon()) return;
@@ -292,7 +288,7 @@ void ioRepairRoad(Map *m) {
 		free(c2);
 		return;
 	}
-	c = getchar();
+	char c = getchar();
 	if (c != '\n' && c != EOF) { //sprawdzanie czy po poleceniu nie ma jeszcze czegoś
 		ungetc(c, stdin);
 		ioError();
@@ -300,34 +296,32 @@ void ioRepairRoad(Map *m) {
 		free(c2);
 		return;
 	}
+	ungetc(c, stdin);
 	if (!repairRoad(m, c1, c2, year)) {
 		ioError();
 	}
 	free(c1);
 	free(c2);
-	ungetc(c, stdin);
 	return;
 }
 
 //wczytuje dane i wykonuje polecenie getRouteDescription
 void ioGetRouteDescription(Map *m) {
-	char c = getchar();
-	if (c != ';') {
-		ungetc(c, stdin);
-		ioError();
-		return;
-	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie numeru drogi
 	unsigned nr;
-	if (scanf("%u", &nr) != 1) {
+	if (!ioReadUnsigned(&nr)) {
 		ioError();
 		return;
 	}
-	c = getchar();
-	if (c != '\n' && c != EOF) { //sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	char c = getchar();
+	if (c != '\n' && c != EOF) { 
 		ungetc(c, stdin);
 		ioError(); 
 		return;
 	}
+	ungetc(c, stdin);
 	const char *str = getRouteDescription(m, nr);
 	if (str == NULL) {
 		//nie udało się uzyskać opisu podanej drogi krajowej
@@ -337,7 +331,6 @@ void ioGetRouteDescription(Map *m) {
 	printf(str);
 	printf("\n");
 	free((void *)str);
-	ungetc(c, stdin);
 	return;
 }
 
@@ -363,7 +356,10 @@ void ioMakeRoute(Map *m) {
 		ioError();
 		return;
 	}
-	if (!ioIsSemicolon()) return;
+	if (!ioIsSemicolon()) {
+		free((void *)city1);
+		return;
+	}
 	//wczytywanie roku ostatniej modyfikacji odcinka drogi
 	int year;
 	if (!ioReadInteger(&year)) {
@@ -371,7 +367,10 @@ void ioMakeRoute(Map *m) {
 		ioError();
 		return;
 	}
-	if (!ioIsSemicolon()) return;
+	if (!ioIsSemicolon()) {
+		free((void *)city1);
+		return;
+	}
 	//wczytywanie drugiego miasta
 	const char *city2 = ioGetCity();
 	if (city2 == NULL) {
@@ -414,7 +413,7 @@ void ioMakeRoute(Map *m) {
 		//wczytywanie kolejnego miasta
 		const char *city2 = ioGetCity();
 		if (city2 == NULL) return;
-
+		//udało się wczytać dane, próba wykonywania polecenia
 		if (!addToRoute(m, nr, city2, length, year)) {
 			free((void *)city2);
 			ioError();
@@ -460,9 +459,96 @@ void ioNewRoute(Map *m) {
 		free((void *)city2);
 		return;
 	}
-	//wczytano poprawnie dane, wykonywanie polecenia
-	if (!newRoute(m, id, city2, city2)) ioError();
+	ungetc(c, stdin);
+	//udało się wczytać dane, próba wykonywania polecenia
+	if (!newRoute(m, id, city1, city2)) ioError();
 	free((void *)city1);
 	free((void *)city2);
+	return;
+}
+
+//wczytuje potrzebne dane i wykonuje polecenie extendRoute
+void ioExtendRoute(Map *m) {
+	if (ioEmptyCommand()) return;
+	if (!ioIsSemicolon()) return;
+	//wczytywanie numeru drogi
+	unsigned id;
+	if (!ioReadUnsigned(&id)) {
+		ioError();
+		return;
+	}
+	if (!ioIsSemicolon()) return;
+	//wczytywanie nazwy pierwszego miasta
+	const char *city = ioGetCity();
+	if (city == NULL) return;
+	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	char c = getchar();
+	if (c != '\n' && c != EOF) {
+		ungetc(c, stdin);
+		ioError();
+		free((void *)city);
+		return;
+	}
+	ungetc(c, stdin);
+	//udało się wczytać dane, próba wykonywania polecenia
+	if (!extendRoute(m, id, city)) ioError();
+	free((void *)city);
+	return;
+}
+
+//wczytuje potrzebne dane i wykonuje polecenie extendRoute
+void ioRemoveRoad(Map *m) {
+	if (ioEmptyCommand()) return;
+	if (!ioIsSemicolon()) return;
+	//wczytywanie nazwy pierwszego miasta
+	const char *city1 = ioGetCity();
+	if (city1 == NULL) return;
+	if (!ioIsSemicolon()) {
+		free((void *)city1);
+		return;
+	}
+	//wczytywanie nazwy drugiego miasta
+	const char *city2 = ioGetCity();
+	if (city2 == NULL) {
+		free((void *)city1);
+		return;
+	}
+	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	char c = getchar();
+	if (c != '\n' && c != EOF) {
+		ungetc(c, stdin);
+		ioError();
+		free((void *)city1);
+		free((void *)city2);
+		return;
+	}
+	ungetc(c, stdin);
+	//udało się wczytać dane, próba wykonywania polecenia
+	if (!removeRoad(m, city1, city2)) ioError();
+	free((void *)city1);
+	free((void *)city2);
+	return;
+}
+
+//wczytuje potrzebne dane i wykonuje polecenie removeRoute
+void ioRemoveRoute(Map *m) {
+	if (ioEmptyCommand()) return;
+	if (!ioIsSemicolon()) return;
+	//wczytywanie numeru drogi
+	unsigned id;
+	if (!ioReadUnsigned(&id)) {
+		ioError();
+		return;
+	}
+	//sprawdzanie czy po poleceniu nie ma jeszcze czegoś
+	char c = getchar();
+	if (c != '\n' && c != EOF) {
+		ungetc(c, stdin);
+		ioError();
+		return;
+	}
+	ungetc(c, stdin);
+	//udało się wczytać dane, próba wykonywania polecenia
+	if (!removeRoute(m, id)) ioError();
 	return;
 }

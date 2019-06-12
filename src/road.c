@@ -17,6 +17,7 @@ void roadListDelete(RoadList *l) {
 		p = temp;
 	}
 	free(l);
+	return;
 }
 
 //dodaje element na początek listy dróg

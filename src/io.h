@@ -34,3 +34,12 @@ void ioMakeRoute(Map *m);
 
 ///wczytuje potrzebne dane i wykonuje polecenie addRoute
 void ioNewRoute(Map *m);
+
+///wczytuje potrzebne dane i wykonuje polecenie extendRoute
+void ioExtendRoute(Map *m);
+
+///wczytuje potrzebne dane i wykonuje polecenie removeRoad
+void ioRemoveRoad(Map *m);
+
+///wczytuje potrzebne dane i wykonuje polecenie removeRoute
+void ioRemoveRoute(Map *m);
