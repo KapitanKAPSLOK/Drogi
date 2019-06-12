@@ -101,6 +101,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 	City *c1 = cityHashTableFind(map->cities, city1);
 	City *c2 = cityHashTableFind(map->cities, city2);
 	if (c1 == NULL || c2 == NULL) return false; //któreś z podanych miast nie istnieje
+	if(!roadListFindStr(c1->roads, city2)) return false; //sprawdzanie czy miasta sąpołączone
 	RouteList *route = map->routes;
 	while (route != NULL) {
 		if (!routeCanChange(route->r, c1, c2)) return false;
@@ -185,6 +186,8 @@ bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, i
 
 //tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi
 bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year) {
+	if (routeId < 1 || routeId>999) return false; //niepoprawny identyfikator drogi krajowej
+	if (!strcmp(city1, city2)) return false; //nazwy miast są takie same
 	if (routeListFind(map->routes, routeId)) return false; //droga krajowa o podanym numerze już istnieje
 	addRoad(map, city1, city2, length, year);
 	if (!repairRoad(map, city1, city2, year)) return false;

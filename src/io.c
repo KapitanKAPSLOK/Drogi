@@ -397,7 +397,6 @@ void ioMakeRoute(Map *m) {
 		//wczytywanie długości odcinka drogi
 		unsigned length;
 		if (!ioReadUnsigned(&length)) {
-			free((void *)city1);
 			ioError();
 			return;
 		}
@@ -405,7 +404,6 @@ void ioMakeRoute(Map *m) {
 		//wczytywanie roku ostatniej modyfikacji odcinka drogi
 		int year;
 		if (!ioReadInteger(&year)) {
-			free((void *)city1);
 			ioError();
 			return;
 		}
@@ -419,7 +417,7 @@ void ioMakeRoute(Map *m) {
 			ioError();
 			return;
 		}
-		free((void *)city2);
+		//free((void *)city2);
 		c = getchar();
 	}
 	ungetc(c, stdin);

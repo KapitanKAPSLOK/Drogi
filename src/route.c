@@ -7,9 +7,9 @@
 #include <string.h>
 
 
-int min(int a, int b) {
-	return (a < b) ? a : b;
-}
+//int min(int a, int b) {
+//	return (a < b) ? a : b;
+//}
 
 //////////////////////routeList/////////////////////////
 
@@ -51,13 +51,15 @@ void routeListDeleteElement(RouteList **l, Route *r) {
 		free(temp);
 		return;
 	}
-	while ((*l)->next != NULL) {
-		if ((*l)->next->r == r) {
-			RouteList *temp = (*l)->next;
-			(*l)->next = (*l)->next->next;
+	RouteList *ptr = *l;
+	while (ptr->next != NULL) {
+		if (ptr->next->r == r) {
+			RouteList *temp = ptr->next;
+			ptr->next = ptr->next->next;
 			free(temp);
 			return;
 		}
+		ptr = ptr->next;
 	}
 	return;
 }
