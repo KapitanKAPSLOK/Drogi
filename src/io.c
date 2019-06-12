@@ -126,7 +126,6 @@ char* ioGetCity() {
 					buffer[bufferSize - 1] = '\0';
 					howLong = 0;
 				}
-
 			}
 		}
 		buffer[i] = getchar();

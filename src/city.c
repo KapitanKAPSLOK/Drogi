@@ -310,6 +310,7 @@ City *cityHashTableAdd(CityHashTable **t, const char *str) {
 		cityHashTableEnlarge(t); //w razie potrzeby powiększa tablicę na dane
 		return c;
 	}
+	free(c);
 	return city;
 }
 

@@ -32,5 +32,6 @@ char *myStringAppendInt(char *str, int addition) {
 	}
 	str = temp;
 	strcat(str, integer);
+	free(integer);
 	return str;
 }

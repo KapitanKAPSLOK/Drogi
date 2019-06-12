@@ -19,14 +19,6 @@ int main() {
 		  ioRepairRoad(map);
 	  else if (ioIsCommand("getRouteDescription"))
 		  ioGetRouteDescription(map);
-	  else if (ioIsCommand("newRoute"))
-		  ioNewRoute(map);
-	  else if (ioIsCommand("extendRoute"))
-		  ioExtendRoute(map);
-	  else if (ioIsCommand("removeRoad"))
-		  ioRemoveRoad(map);
-	  else if (ioIsCommand("removeRoute"))
-		  ioRemoveRoute(map);
 	  else
 		  ioMakeRoute(map);
 	  ioSkipLine();

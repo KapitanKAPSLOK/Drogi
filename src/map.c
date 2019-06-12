@@ -154,6 +154,7 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
 			return NULL; 
 		}
 		if (!(str = myStringAppendString(str, temp))) {
+			free(temp);
 			roadListReverse(start);
 			return NULL;
 		}
