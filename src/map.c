@@ -201,11 +201,11 @@ bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2,
 	if (!roadListAdd(&l, road)) return false;
 	Route *route = routeMake(routeId, l, c, cityHashTableFind(map->cities, city2));
 	if (route == NULL) {
-		roadListDeleteElements(l);
+		free(l);
 		return false;
 	}
 	if (!routeListAdd(&(map->routes), route)) {
-		roadListDeleteElements(l);
+		free(l);
 		free(route);
 		return false; //nie udało się dodać drogi krajowej do mapy
 	}

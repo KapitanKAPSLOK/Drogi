@@ -243,11 +243,13 @@ RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirect
 	if (!prepareCities(start, end, start, cities, notDirectly)) {
 		//nie udało się przygotować pamięci potrzebnej do działania algorytmu
 		cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamięci przed wystąpieniem błędu
+		minHeapDelete(h);
 		return NULL;
 	}
 	if (end->temporaryData == NULL) {
 		//nie ma połączenia między podanymi miastami
 		cityDeleteTemporaryData(start); //zwalnianie zaalokowanej pamięci
+		minHeapDelete(h);
 		return NULL;
 	}
 	//argumenty funkcji są poprawne i zostało zaalokowana pamięć i ustawione zmienne pomocnicze
@@ -283,12 +285,14 @@ RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirect
 		//miasto nie było odwiedzone z czego wynika,
 		//że notDirectly jest true i jedyna ścieżka do miasta docelowego prowadziła bezpośrednio z c1 o c2
 		cityDeleteTemporaryData(start);
+		minHeapDelete(h);
 		return NULL;
 	}
 	int age;
 	bool ambiguity; //przechowuje informacje czy wyznaczanie najkrótszej trasy było jednoznaczne
 	RoadList *l = getMinimalRoute(start, end, &age, &ambiguity);
 	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamięci tymczasowej
+	minHeapDelete(h);
 	if (ambiguity) return NULL; //nie udało się jednoznacznie wyznaczyć minimalnej ścieżki
 	return l;
 }

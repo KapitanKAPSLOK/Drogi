@@ -59,13 +59,23 @@ MinHeap* minHeapCreate(void) {
 	h->tab = malloc(10*sizeof(*(h->tab))); //domyślny początkowy rozmiar tablicy to 10
 	if (h->tab == NULL) { //za mało pamięci na tablicę dziesięcio elementową
 		h->tab = malloc(sizeof(*(h->tab)));
-		if (h->tab == NULL) return NULL; //brak pamięci
+		if (h->tab == NULL) {//brak pamięci
+			free(h);
+			return NULL; 
+		}
 		h->maxSize = 1;
 		return h;
 	}
 	//udało się zaalokować pamięć na dziesięcio elementową tablicę
 	h->maxSize = 10;
 	return h;
+}
+
+//zwalnia pamieć po strukturze kopca
+void minHeapDelete(MinHeap *h) {
+	if (h == NULL) return;
+	free(h->tab);
+	free(h);
 }
 
 //dodaje element @p c do kopca
@@ -102,13 +112,3 @@ City* minHeapPeak(MinHeap *h) {
 	return temp;
 }
 
-
-//DEBUG, wyświetl
-//void show(MinHeap *h) {
-//	for (int i = 0; i < h->size; ++i) {
-//		printf("%d ", i);
-//		printf(h->tab[i]->name);
-//		printf(" ");
-//	}
-//	printf("\n");
-//}

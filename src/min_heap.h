@@ -48,3 +48,6 @@ Zdjęty element jest elementem minimalnym.
 * @return wskaźnik na zdjęty element, czyli miasto
 */
 City* minHeapPeak(MinHeap *h);
+
+///zwalnia pamieć po strukturze kopca
+void minHeapDelete(MinHeap *h);
