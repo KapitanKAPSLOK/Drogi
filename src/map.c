@@ -90,6 +90,7 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 	CityList *cit = routeMakeCityList(r);
 	cityListDeleteElement(&cit, r->end);
 	RoadList *extendRoads = connectCities(r->end, c, cit, false);
+	cityListDelete(cit);
 	if (extendRoads == NULL) return false; //nie udało się przedłużyć drogi
 	roadListAddList(&(r->roads), extendRoads);
 	r->end = c;

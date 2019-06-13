@@ -123,7 +123,7 @@ void routeFix(Route *r, City *c1, City *c2) {
 				cityListDeleteElement(&temp, c1);
 				
 				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze się uda, bo było wcześniej sprawdzane
-
+				cityListDelete(temp);
 				if (!roadConnectCity(fix->r,crossedRoads)) {
 					//naprawiono część drogi w przeciwnym kierunku względem drogi krajowej, więc trzeba odwrócić
 					fix = roadListReverse(fix);
@@ -158,7 +158,16 @@ bool routeCanChange(Route *r, City *c1, City *c2) {
 				if (temp == NULL) return false;
 				cityListDeleteElement(&temp, c2);
 				cityListDeleteElement(&temp, c1);
-				return connectCities(c1, c2, temp, true);
+				bool result;
+				RoadList *temp2 = connectCities(c1, c2, temp, true);
+				if (temp2 != NULL) 
+					result = true;
+				else 
+					result = false;
+
+				roadListDelete(temp2);
+				cityListDelete(temp);
+				return result;
 			}
 			//nie może być pętli, więc tylko jeden odcinek drogi z danego miasta może być wykorzystany
 			//po pierwszym wystąpieniu miasta następny odcinek drogi musi być tym który jest szukany lub już go nie będzie
