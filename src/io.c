@@ -416,10 +416,9 @@ void ioMakeRoute(Map *m) {
 			ioError();
 			return;
 		}
-		//free((void *)city2);
+		free(city2);
 		c = getchar();
 	}
-	free(city2);
 	ungetc(c, stdin);
 	return;
 }
