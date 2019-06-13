@@ -2,7 +2,7 @@
  * Interfejs klasy dróg krajowych
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
- * @date 03.04.2019
+ * @date 13.06.2019
  */
 #pragma once
 

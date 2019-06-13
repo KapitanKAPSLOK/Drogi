@@ -1,9 +1,9 @@
 /** @file
  * Interfejs klasy przechowującej mapę dróg krajowych
  *
- * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>
+ * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>, Mateusz Turowski <mj.turowski@student.uw.edu.pl>
  * @copyright Uniwersytet Warszawski
- * @date 20.03.2019
+ * @date 13.06.2019
  */
 
 #ifndef __MAP_H__
@@ -137,12 +137,21 @@ bool removeRoad(Map *map, const char *city1, const char *city2);
  */
 char const* getRouteDescription(Map *map, unsigned routeId);
 
+///dodaje odcinek drogi do istniejącej drogi krajowej
+///@return true jeśli operacja się udała, false w przeciwnym wypadku
 bool addToRoute(Map *map, unsigned routeId, const char *city, unsigned length, int year);
 
-//tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi
+/**Tworzy nową drogę krajową między podanymi miastami łącząc je bezpośrenio odcinkiem drogi.
+Jeśli podane w parametrach miasta nie istnieją tworzy je i dodaje między nimi odcinek drogi.
+Jeśli odcinek drogi między podanymi miastami istnieje remontuje go.
+@return true jeśli operacja się powiedzie, false w przeciwnym przypadku, zabraknie pamięci, nie można
+dodać lub wyremontować odcinka drogi, nie można dodać miast
+*/
 bool makeRoute(Map *map, unsigned routeId, const char *city1, const char *city2, unsigned length, int year);
 
-//TODO: opis
+/**Usuwa drogę krajową o podanym numerze z mapy.
+@return true jeśli operacja się powiedzie, false jeśli droga krajowa nie istnieje
+*/
 bool removeRoute(Map *map, unsigned routeId);
 
 #endif /* __MAP_H__ */

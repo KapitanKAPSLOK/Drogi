@@ -4,7 +4,7 @@
  * przechowywanych pod zerowym indeksem w @p temporaryData (miasto->temporaryData[0]).
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
- * @date 03.05.2019
+ * @date 13.06.2019
  */
 
 #pragma once

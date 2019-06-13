@@ -2,7 +2,7 @@
  * Interfejs klasy odpowiedzialnej za interakcję z użytkownikiem.
  *
  * @author Mateusz Turowski <mj.turowski@student.uw.edu.pl>
- * @date 18.05.2019
+ * @date 13.06.2019
  */
 
 #pragma once
