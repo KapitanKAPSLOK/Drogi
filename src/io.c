@@ -338,51 +338,52 @@ void ioMakeRoute(Map *m) {
 	}
 	if (!ioIsSemicolon()) return;
 	//wczytywanie miasta startwego
-	const char *city1 = ioGetCity();
+	char *city1 = ioGetCity();
 	if (city1 == NULL) return; //nie udało się wczytać nazwy miasta
 	if (!ioIsSemicolon()) {
-		free((void *)city1);
+		free(city1);
 		return;
 	}
 	//wczytywanie długości odcinka drogi
 	unsigned length;
 	if (!ioReadUnsigned(&length)) {
-		free((void *)city1);
+		free(city1);
 		ioError();
 		return;
 	}
 	if (!ioIsSemicolon()) {
-		free((void *)city1);
+		free(city1);
 		return;
 	}
 	//wczytywanie roku ostatniej modyfikacji odcinka drogi
 	int year;
 	if (!ioReadInteger(&year)) {
-		free((void *)city1);
+		free(city1);
 		ioError();
 		return;
 	}
 	if (!ioIsSemicolon()) {
-		free((void *)city1);
+		free(city1);
 		return;
 	}
 	//wczytywanie drugiego miasta
-	const char *city2 = ioGetCity();
+	char *city2 = ioGetCity();
 	if (city2 == NULL) {
-		free((void *)city1);
+		free(city1);
 		return;
 	}
 
 	//wczytano pierwszy odcinek drogi można utworzyć drogę krajową z niego
 	if(!makeRoute(m, nr, city1, city2, length, year)){
 		//nie udało się utworzyć drogi krajowej o podanych parametrach
-		free((void *)city1);
-		free((void *)city2);
+		free(city1);
+		free(city2);
 		ioError();
 		return;
 	}
-	free((void *)city1);
-	free((void *)city2);
+	free(city1);
+	free(city2);
+	city2 = NULL;
 	char c = getchar();
 	//wczytywanie kolejnych odcinków dróg, które mają zostać dodane do drogi krajowej
 	while (c != '\n' && c != EOF) {
@@ -404,17 +405,18 @@ void ioMakeRoute(Map *m) {
 		}
 		if (!ioIsSemicolon()) return;
 		//wczytywanie kolejnego miasta
-		const char *city2 = ioGetCity();
+		city2 = ioGetCity();
 		if (city2 == NULL) return;
 		//udało się wczytać dane, próba wykonywania polecenia
 		if (!addToRoute(m, nr, city2, length, year)) {
-			free((void *)city2);
+			free(city2);
 			ioError();
 			return;
 		}
 		//free((void *)city2);
 		c = getchar();
 	}
+	free(city2);
 	ungetc(c, stdin);
 	return;
 }
