@@ -23,17 +23,6 @@ void ioSkipLine() {
 	return;
 }
 
-//return 1 if succesfully read a char or 0 otherwise
-//bool ioReadChar(char* c) {//TODO
-//	*c = getchar();
-//	if (*c != '0' && *c != '1' && *c != '2' && *c != '3' && *c != '\n') {
-//		fputs("ERROR\n", stderr);
-//		ioSkipLine();
-//		return false;
-//	}
-//	return true;
-//}
-
 //skip input data to first possible command, return 0 if end of file
 bool ioSkipToCommand() {
 	char c = getchar();
@@ -222,7 +211,7 @@ void ioAddRoad(Map *m) {
 		free(c1);
 		return;
 	}
-	if (!ioIsSemicolon() || ioEmptyCommand()) {
+	if (!ioIsSemicolon()) {
 		free(c1);
 		free(c2);
 		return;
@@ -235,7 +224,7 @@ void ioAddRoad(Map *m) {
 		free(c2);
 		return;
 	}
-	if (!ioIsSemicolon() || ioEmptyCommand()) {
+	if (!ioIsSemicolon()) {
 		free(c1);
 		free(c2);
 		return;
@@ -251,6 +240,8 @@ void ioAddRoad(Map *m) {
 	char c = getchar();
 	if (c != '\n' && c != EOF) { //sprawdzanie czy po poleceniu nie ma jeszcze czegoś
 		ungetc(c, stdin);
+		free(c1);
+		free(c2);
 		ioError();
 		return;
 	}
@@ -268,18 +259,20 @@ void ioRepairRoad(Map *m) {
 	//wczytywanie nazwy miasta
 	char *c1 = ioGetCity();
 	if (c1 == NULL) return; //wystąpił błąd podczas czytania nazwy miasta
-	if (!ioIsSemicolon()) return;
+	if (!ioIsSemicolon()) {
+		free(c1);
+		return;
+	}
 	char *c2 = ioGetCity();
 	if (c2 == NULL) {
 		free(c1);
 		return;
 	}
-	if (ioEmptyCommand()) { //polecenie skończyło się za wcześnie
+	if (!ioIsSemicolon()) {
 		free(c1);
 		free(c2);
-		return; 
+		return;
 	}
-	if (!ioIsSemicolon()) return;
 	int year;
 	if (!ioReadInteger(&year)) {
 		ioError();
@@ -346,8 +339,10 @@ void ioMakeRoute(Map *m) {
 	//wczytywanie miasta startwego
 	const char *city1 = ioGetCity();
 	if (city1 == NULL) return; //nie udało się wczytać nazwy miasta
-	if (!ioIsSemicolon()) return;
-	if (ioEmptyCommand()) return;
+	if (!ioIsSemicolon()) {
+		free((void *)city1);
+		return;
+	}
 	//wczytywanie długości odcinka drogi
 	unsigned length;
 	if (!ioReadUnsigned(&length)) {
