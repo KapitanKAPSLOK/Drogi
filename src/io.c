@@ -108,8 +108,7 @@ char* ioGetCity() {
 			if (++howLong == 100) {
 				//nazwa miasta jest bardzo długa i bardziej optymalny jest większy bufor
 				char* temp = realloc(buffer, bufferSize * 10 * sizeof(*buffer));
-				if (temp == NULL) free(str);
-				else {
+				if (temp != NULL){
 					buffer = temp;
 					bufferSize *= 10;
 					buffer[bufferSize - 1] = '\0';
@@ -130,7 +129,9 @@ char* ioGetCity() {
 	}
 	//jeśli program doszedł do tego miejsca znaczy wystąpiło \n lub EOF
 	ungetc(buffer[i], stdin);
+	free(buffer);
 	ioError();
+	free(str);
 	return NULL;
 }
 
