@@ -326,7 +326,7 @@ void ioGetRouteDescription(Map *m) {
 	}
 	printf(str);
 	printf("\n");
-	free((void *)str);
+	free((char *)str);
 	return;
 }
 

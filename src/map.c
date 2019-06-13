@@ -158,6 +158,7 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
 			roadListReverse(start);
 			return NULL;
 		}
+		free(temp);
 		l = l->next;
 	}
 	roadListReverse(start); //trzeba naprawić odwróconą listę
