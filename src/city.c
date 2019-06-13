@@ -98,7 +98,10 @@ City *cityMake(const char *str) {
 	if (c == NULL) return NULL; //błąd alokacji pamięci
 	c->roads = NULL;
 	c->name = malloc((strlen(str)+1) * sizeof(char));
-	if (c->name == NULL) return NULL; //błąd alokacji pamięci
+	if (c->name == NULL) {
+		free(c);
+		return NULL; //błąd alokacji pamięci
+	}
 	strcpy(c->name, str);
 	c->roads = NULL;
 	c->temporaryData = NULL;
@@ -310,7 +313,7 @@ City *cityHashTableAdd(CityHashTable **t, const char *str) {
 		cityHashTableEnlarge(t); //w razie potrzeby powiększa tablicę na dane
 		return c;
 	}
-	free(c);
+	cityDelete(c);
 	return city;
 }
 
