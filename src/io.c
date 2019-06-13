@@ -206,7 +206,10 @@ void ioAddRoad(Map *m) {
 	//wczytywanie miast
 	char *c1 = ioGetCity();
 	if (c1 == NULL) return; //wystąpił błąd podczas czytania nazwy miasta
-	if (!ioIsSemicolon()) return;
+	if (!ioIsSemicolon()) {
+		free(c1);
+		return;
+	}
 	char *c2 = ioGetCity();
 	if (c2 == NULL) {
 		free(c1);
