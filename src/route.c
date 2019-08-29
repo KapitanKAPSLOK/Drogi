@@ -305,6 +305,10 @@ RoadList *connectCities(City *start, City *end, CityList *cities, bool notDirect
 	RoadList *l = getMinimalRoute(start, end, &age, &ambiguity);
 	cityDeleteTemporaryData(start); //usuwanie zaalokowanej pamięci tymczasowej
 	minHeapDelete(h);
-	if (ambiguity) return NULL; //nie udało się jednoznacznie wyznaczyć minimalnej ścieżki
+	if (ambiguity) {
+		//nie udało się jednoznacznie wyznaczyć minimalnej ścieżki
+		roadListDelete(l);
+		return NULL;
+	}
 	return l;
 }
