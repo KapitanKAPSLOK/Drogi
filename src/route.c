@@ -204,6 +204,7 @@ RoadList *getMinimalRoute(City *start, City *end, int *age, bool *ambigunity) {
 					roadListDelete(route);
 					return NULL; 
 				}
+				roadListDelete(minimalRoute);
 				minimalRoute = route;
 				maxAge = *age;
 			}
