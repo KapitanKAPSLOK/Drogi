@@ -125,8 +125,11 @@ void routeFix(Route *r, City *c1, City *c2) {
 				RoadList *fix=connectCities(c1, c2, temp, true); //zawsze się uda, bo było wcześniej sprawdzane
 				cityListDelete(temp);
 				if (!roadConnectCity(fix->r,crossedRoads)) {
-					//naprawiono część drogi w przeciwnym kierunku względem drogi krajowej, więc trzeba odwrócić
-					fix = roadListReverse(fix);
+					if (crossedRoads != NULL || !roadConnectCity(fix->r, r->end)) {
+						//naprawiono część drogi w przeciwnym kierunku względem drogi krajowej, więc trzeba odwrócić
+						fix = roadListReverse(fix);
+					}
+
 				}
 				//podłączanie nowego kawałka drogi po odcinku który ma zostać usunięty
 				roadListAddList(&(l->next), fix);
